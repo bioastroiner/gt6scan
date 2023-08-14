@@ -1,4 +1,4 @@
-package com.myname.mymodid;
+package bioast.mods.gt6m;
 
 public class ClientProxy extends CommonProxy {
 
