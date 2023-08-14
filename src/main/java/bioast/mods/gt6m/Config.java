@@ -2,7 +2,6 @@ package bioast.mods.gt6m;
 
 import java.io.File;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import net.minecraftforge.common.config.Configuration;
 
 public enum Config {
@@ -14,7 +13,11 @@ public enum Config {
     SCRAP_NO("QOL",
             "removeScrapOnBreak",
             true,
-            "Do not return Scrap whenever a tool breaks");
+            "Do not return Scrap whenever a tool breaks"),
+    ELECTRIC_DURIBILITY_NO("QOL",
+            "removeElectricToolsDuribility",
+            true,
+            "Electric tools no longer use any duribility just Electricity.");
     enum EType{
         Boolean,Integer,Float
     }
@@ -34,10 +37,10 @@ public enum Config {
     int integer;
 
     public float getFloat() {
-        return flo;
+        return floati;
     }
 
-    float flo;
+    float floati;
     public static Configuration configuration;
 
 
@@ -71,7 +74,7 @@ public enum Config {
                     configuration.get(cfg.cg,cfg.key,cfg.integer);
                     break;
                 case Float:
-                    configuration.get(cfg.cg,cfg.key,cfg.flo);
+                    configuration.get(cfg.cg,cfg.key,cfg.floati);
                     break;
             }
         }
