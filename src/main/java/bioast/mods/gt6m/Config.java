@@ -68,13 +68,13 @@ public enum Config {
 
             switch(cfg.type){
                 case Boolean:
-                    configuration.get(cfg.cg,cfg.key,cfg.bool);
+                    configuration.get(cfg.cg,cfg.key,cfg.bool,cfg.comment);
                     break;
                 case Integer:
-                    configuration.get(cfg.cg,cfg.key,cfg.integer);
+                    configuration.get(cfg.cg,cfg.key,cfg.integer,cfg.comment);
                     break;
                 case Float:
-                    configuration.get(cfg.cg,cfg.key,cfg.floati);
+                    configuration.get(cfg.cg,cfg.key,cfg.floati,cfg.comment);
                     break;
             }
         }
