@@ -2,13 +2,13 @@
   "required": true,
   "minVersion": "0.8.5-GTNH",
   "package": "bioast.mods.gt6m.mixin",
-  "plugin": "bioast.mods.gt6m.mixin.MixinPlugin",
+  "plugin": "bioast.mods.gt6m.mixin.plugin.MixinPlugin",
   "refmap": "mixins.gt6m.refmap.json",
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "GT_ToolStats_Mixin",
-    "MultiItemToolMixin"
+    "gregtech.GT_MultiItemTool_Mixin",
+    "gregtech.GT_ToolStats_Mixin"
   ],
   "client": [],
   "server": []

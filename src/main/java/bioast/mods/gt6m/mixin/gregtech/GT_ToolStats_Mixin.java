@@ -1,13 +1,8 @@
-package bioast.mods.gt6m.mixin;
+package bioast.mods.gt6m.mixin.gregtech;
 
 import bioast.mods.gt6m.Config;
 import bioast.mods.gt6m.GT6M_Mod;
-import bioast.mods.gt6m.helper.ToolHelper;
-import gregapi.item.IItemEnergy;
-import gregapi.item.multiitem.MultiItemTool;
-import gregapi.item.multiitem.MultiItemToolWithCompat;
 import gregapi.item.multiitem.tools.ToolStats;
-import gregtech.items.MultiItemRandomTools;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
