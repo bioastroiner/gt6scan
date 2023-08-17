@@ -5,4 +5,9 @@ repositories {
         name = "gt"
         url = "http://gregtech.mechaenetia.com/"
     }
+    maven {
+        name 'GTNH Maven'
+        url 'http://jenkins.usrv.eu:8081/nexus/content/groups/public/'
+        allowInsecureProtocol
+    }
 }
