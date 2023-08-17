@@ -3,10 +3,10 @@
 	"modList": [{
 		"modid": "${modId}",
 		"name": "${modName}",
-		"description": "An example mod for Minecraft 1.7.10 with Forge focused on a stable setup.",
+		"description": "Random Fixes for Gregtech 6. Visit Github for details. All Fixes (almost) can be disabled in Configs.",
 		"version": "${modVersion}",
 		"mcversion": "${minecraftVersion}",
-		"url": "https://github.com/SinTh0r4s/MyMod",
+		"url": "https://github.com/bioastroiner/gt6mixins",
 		"updateUrl": "",
 		"authorList": ["SinTho0r4s"],
 		"credits": "",
