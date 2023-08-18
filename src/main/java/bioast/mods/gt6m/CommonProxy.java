@@ -6,9 +6,6 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import gregapi.api.Abstract_Proxy;
 
-import static bioast.mods.gt6m.GT6M_Mod.MODNAME;
-import static bioast.mods.gt6m.GT6M_Mod.VERSION;
-
 public class CommonProxy extends Abstract_Proxy {
 
     // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the

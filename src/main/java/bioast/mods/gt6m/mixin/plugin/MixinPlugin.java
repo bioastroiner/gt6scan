@@ -1,14 +1,7 @@
 package bioast.mods.gt6m.mixin.plugin;
 
-import bioast.mods.gt6m.GT6M_Mod;
-import com.gtnewhorizon.gtnhmixins.MinecraftURLClassPath;
-import gregapi.data.MT;
-import net.minecraft.launchwrapper.Launch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
-import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
-import org.spongepowered.libraries.org.objectweb.asm.tree.ClassNode;
+import static bioast.mods.gt6m.mixin.plugin.TargetedMod.*;
+import static java.nio.file.Files.walk;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,8 +13,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static bioast.mods.gt6m.mixin.plugin.TargetedMod.*;
-import static java.nio.file.Files.walk;
+import net.minecraft.launchwrapper.Launch;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
+import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
+import org.spongepowered.libraries.org.objectweb.asm.tree.ClassNode;
+
+import bioast.mods.gt6m.GT6M_Mod;
+
+import com.gtnewhorizon.gtnhmixins.MinecraftURLClassPath;
 
 public class MixinPlugin implements IMixinConfigPlugin {
 
@@ -54,16 +56,13 @@ public class MixinPlugin implements IMixinConfigPlugin {
         final boolean isDevelopmentEnvironment = (boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 
         List<TargetedMod> loadedMods = Arrays.stream(TargetedMod.values())
-            .filter(mod -> mod == VANILLA
-                || (mod.loadInDevelopment && isDevelopmentEnvironment)
-                || loadJarOf(mod))
+            .filter(mod -> mod == VANILLA || (mod.loadInDevelopment && isDevelopmentEnvironment) || loadJarOf(mod))
             .collect(Collectors.toList());
 
         for (TargetedMod mod : TargetedMod.values()) {
-            if(loadedMods.contains(mod)) {
+            if (loadedMods.contains(mod)) {
                 LOG.info("Found " + mod.modName + "! Integrating now...");
-            }
-            else {
+            } else {
                 LOG.info("Could not find " + mod.modName + "! Skipping integration....");
             }
         }
@@ -81,19 +80,18 @@ public class MixinPlugin implements IMixinConfigPlugin {
     private boolean loadJarOf(final TargetedMod mod) {
         try {
             File jar = findJarOf(mod);
-            if(jar == null) {
+            if (jar == null) {
                 LOG.info("Jar not found for " + mod);
                 return false;
             }
 
             LOG.info("Attempting to add " + jar + " to the URL Class Path");
-            if(!jar.exists()) {
+            if (!jar.exists()) {
                 throw new FileNotFoundException(jar.toString());
             }
             MinecraftURLClassPath.addJar(jar);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -101,13 +99,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     public static File findJarOf(final TargetedMod mod) {
         try {
-            return walk(MODS_DIRECTORY_PATH)
-                .filter(mod::isMatchingJar)
+            return walk(MODS_DIRECTORY_PATH).filter(mod::isMatchingJar)
                 .map(Path::toFile)
                 .findFirst()
                 .orElse(null);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }

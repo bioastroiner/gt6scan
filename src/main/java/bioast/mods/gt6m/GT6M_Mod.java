@@ -1,15 +1,15 @@
 package bioast.mods.gt6m;
 
-import cpw.mods.fml.common.event.*;
-import gregapi.api.Abstract_Mod;
-import gregapi.api.Abstract_Proxy;
+import static bioast.mods.gt6m.GT6M_Mod.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-
-import static bioast.mods.gt6m.GT6M_Mod.*;
+import cpw.mods.fml.common.event.*;
+import gregapi.api.Abstract_Mod;
+import gregapi.api.Abstract_Proxy;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME, acceptedMinecraftVersions = "[1.7.10]")
 public class GT6M_Mod extends Abstract_Mod {
@@ -46,14 +46,40 @@ public class GT6M_Mod extends Abstract_Mod {
     }
 
     // Do not change these 7 Functions. Just keep them this way.
-    @cpw.mods.fml.common.Mod.EventHandler public final void onPreLoad           (cpw.mods.fml.common.event.FMLPreInitializationEvent    aEvent) {onModPreInit(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onLoad              (cpw.mods.fml.common.event.FMLInitializationEvent       aEvent) {onModInit(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onPostLoad          (cpw.mods.fml.common.event.FMLPostInitializationEvent   aEvent) {onModPostInit(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onServerStarting    (cpw.mods.fml.common.event.FMLServerStartingEvent       aEvent) {onModServerStarting(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onServerStarted     (cpw.mods.fml.common.event.FMLServerStartedEvent        aEvent) {onModServerStarted(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onServerStopping    (cpw.mods.fml.common.event.FMLServerStoppingEvent       aEvent) {onModServerStopping(aEvent);}
-    @cpw.mods.fml.common.Mod.EventHandler public final void onServerStopped     (cpw.mods.fml.common.event.FMLServerStoppedEvent        aEvent) {onModServerStopped(aEvent);}
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onPreLoad(cpw.mods.fml.common.event.FMLPreInitializationEvent aEvent) {
+        onModPreInit(aEvent);
+    }
 
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onLoad(cpw.mods.fml.common.event.FMLInitializationEvent aEvent) {
+        onModInit(aEvent);
+    }
+
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onPostLoad(cpw.mods.fml.common.event.FMLPostInitializationEvent aEvent) {
+        onModPostInit(aEvent);
+    }
+
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onServerStarting(cpw.mods.fml.common.event.FMLServerStartingEvent aEvent) {
+        onModServerStarting(aEvent);
+    }
+
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onServerStarted(cpw.mods.fml.common.event.FMLServerStartedEvent aEvent) {
+        onModServerStarted(aEvent);
+    }
+
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onServerStopping(cpw.mods.fml.common.event.FMLServerStoppingEvent aEvent) {
+        onModServerStopping(aEvent);
+    }
+
+    @cpw.mods.fml.common.Mod.EventHandler
+    public final void onServerStopped(cpw.mods.fml.common.event.FMLServerStoppedEvent aEvent) {
+        onModServerStopped(aEvent);
+    }
 
     @Override
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {

@@ -6,23 +6,22 @@ import net.minecraftforge.common.config.Configuration;
 
 public enum Config {
 
-    PENALTY_NO("QOL",
-            "removePotionsPenaltyOnBreak",
-            true,
-            "Removes that Nasty Effects whenever you break a GT tool so no more Slowness and Ftigue. Gt tools are Bad enough!"),
-    SCRAP_NO("QOL",
-            "removeScrapOnBreak",
-            true,
-            "Do not return Scrap whenever a tool breaks"),
-    ELECTRIC_DURIBILITY_NO("QOL",
-            "removeElectricToolsDuribility",
-            true,
-            "Electric tools no longer use any duribility just Electricity.");
-    enum EType{
-        Boolean,Integer,Float
+    PENALTY_NO("QOL", "removePotionsPenaltyOnBreak", true,
+        "Removes that Nasty Effects whenever you break a GT tool so no more Slowness and Ftigue. Gt tools are Bad enough!"),
+    SCRAP_NO("QOL", "removeScrapOnBreak", true, "Do not return Scrap whenever a tool breaks"),
+    ELECTRIC_DURIBILITY_NO("QOL", "removeElectricToolsDuribility", true,
+        "Electric tools no longer use any duribility just Electricity.");
+
+    enum EType {
+        Boolean,
+        Integer,
+        Float
     }
+
     Config.EType type;
-    String cg;String key;String comment;
+    final String CATEGORY;
+    final String KEY;
+    final String COMMENT;
 
     public boolean getBool() {
         return bool;
@@ -43,22 +42,27 @@ public enum Config {
     float floati;
     public static Configuration configuration;
 
-
-    Config(String cg, String key){
-        this.cg = cg;
-        this.key = key;
+    Config(String CATEGORY, String KEY) {
+        this.CATEGORY = CATEGORY;
+        this.KEY = KEY;
+        this.COMMENT = "";
     }
 
-    Config(String cg, String key,Boolean boolIn,String cmt){
-        this(cg,key);
-        bool=boolIn;
+    Config(String CATEGORY, String KEY, String COMMENT) {
+        this.CATEGORY = CATEGORY;
+        this.KEY = KEY;
+        this.COMMENT = COMMENT;
+    }
+
+    Config(String CATEGORY, String KEY, Boolean boolIn, String cmt) {
+        this(CATEGORY, KEY, cmt);
+        bool = boolIn;
         type = EType.Boolean;
-        comment=cmt;
     }
 
-    Config(String cg, String key,int IntIn){
-        this(cg,key);
-        integer=IntIn;
+    Config(String CATEGORY, String KEY, int IntIn) {
+        this(CATEGORY, KEY);
+        integer = IntIn;
         type = EType.Integer;
     }
 
@@ -66,15 +70,15 @@ public enum Config {
         configuration = new Configuration(configFile);
         for (Config cfg : Config.values()) {
 
-            switch(cfg.type){
+            switch (cfg.type) {
                 case Boolean:
-                    configuration.get(cfg.cg,cfg.key,cfg.bool,cfg.comment);
+                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.bool, cfg.COMMENT);
                     break;
                 case Integer:
-                    configuration.get(cfg.cg,cfg.key,cfg.integer,cfg.comment);
+                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.integer, cfg.COMMENT);
                     break;
                 case Float:
-                    configuration.get(cfg.cg,cfg.key,cfg.floati,cfg.comment);
+                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.floati, cfg.COMMENT);
                     break;
             }
         }

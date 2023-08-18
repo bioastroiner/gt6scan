@@ -1,22 +1,23 @@
 package bioast.mods.gt6m.mixin.plugin;
 
-import com.google.common.io.Files;
-
 import java.nio.file.Path;
 
+import com.google.common.io.Files;
+
 /**
- *  IMPORTANT: Do not make any references to any mod from this file. This file is loaded quite early on and if
- *  you refer to other mods you load them as well. The consequence is: You can't inject any previously loaded classes!
- *  Exception: Tags.java, as long as it is used for Strings only!
+ * IMPORTANT: Do not make any references to any mod from this file. This file is loaded quite early on and if
+ * you refer to other mods you load them as well. The consequence is: You can't inject any previously loaded classes!
+ * Exception: Tags.java, as long as it is used for Strings only!
  */
 public enum TargetedMod {
 
     VANILLA("Minecraft", "unused", true),
-    GREGTECH("Gregtech","unused",true);
+    GREGTECH("Gregtech", "unused", true);
 
     public final String modName;
     public final String jarNamePrefixLowercase;
-    // Optional dependencies can be omitted in development. Especially skipping GT5U will drastically speed up your game start!
+    // Optional dependencies can be omitted in development. Especially skipping GT5U will drastically speed up your game
+    // start!
     public final boolean loadInDevelopment;
 
     TargetedMod(String modName, String jarNamePrefix, boolean loadInDevelopment) {
@@ -27,7 +28,8 @@ public enum TargetedMod {
 
     public boolean isMatchingJar(Path path) {
         final String pathString = path.toString();
-        final String nameLowerCase = Files.getNameWithoutExtension(pathString).toLowerCase();
+        final String nameLowerCase = Files.getNameWithoutExtension(pathString)
+            .toLowerCase();
         final String fileExtension = Files.getFileExtension(pathString);
 
         return nameLowerCase.startsWith(jarNamePrefixLowercase) && "jar".equals(fileExtension);
@@ -35,9 +37,12 @@ public enum TargetedMod {
 
     @Override
     public String toString() {
-        return "TargetedMod{" +
-            "modName='" + modName + '\'' +
-            ", jarNamePrefixLowercase='" + jarNamePrefixLowercase + '\'' +
-            '}';
+        return "TargetedMod{" + "modName='"
+            + modName
+            + '\''
+            + ", jarNamePrefixLowercase='"
+            + jarNamePrefixLowercase
+            + '\''
+            + '}';
     }
 }
