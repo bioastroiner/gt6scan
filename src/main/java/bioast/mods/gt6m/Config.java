@@ -3,6 +3,7 @@ package bioast.mods.gt6m;
 import java.io.File;
 
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 public enum Config {
 
@@ -23,24 +24,15 @@ public enum Config {
     final String KEY;
     final String COMMENT;
 
-    public boolean getBool() {
-        return bool;
+    public boolean getBoolean() {
+        return property.getBoolean();
     }
 
-    boolean bool;
-
-    public int getInteger() {
-        return integer;
-    }
-
-    int integer;
-
-    public float getFloat() {
-        return floati;
-    }
-
-    float floati;
+    boolean defaultBoolean;
+    int defaultInteger;
+    float defaultFloat;
     public static Configuration configuration;
+    public static Property property;
 
     Config(String CATEGORY, String KEY) {
         this.CATEGORY = CATEGORY;
@@ -56,13 +48,13 @@ public enum Config {
 
     Config(String CATEGORY, String KEY, Boolean boolIn, String cmt) {
         this(CATEGORY, KEY, cmt);
-        bool = boolIn;
+        defaultBoolean = boolIn;
         type = EType.Boolean;
     }
 
     Config(String CATEGORY, String KEY, int IntIn) {
         this(CATEGORY, KEY);
-        integer = IntIn;
+        defaultInteger = IntIn;
         type = EType.Integer;
     }
 
@@ -72,13 +64,13 @@ public enum Config {
 
             switch (cfg.type) {
                 case Boolean:
-                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.bool, cfg.COMMENT);
+                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultBoolean, cfg.COMMENT);
                     break;
                 case Integer:
-                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.integer, cfg.COMMENT);
+                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultInteger, cfg.COMMENT);
                     break;
                 case Float:
-                    configuration.get(cfg.CATEGORY, cfg.KEY, cfg.floati, cfg.COMMENT);
+                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultFloat, cfg.COMMENT);
                     break;
             }
         }
