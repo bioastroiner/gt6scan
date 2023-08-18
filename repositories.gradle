@@ -10,4 +10,8 @@ repositories {
         url 'http://jenkins.usrv.eu:8081/nexus/content/groups/public/'
         allowInsecureProtocol
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 }
