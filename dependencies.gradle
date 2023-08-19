@@ -36,6 +36,13 @@
 dependencies {
     api('com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev')
     api('com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev')
+//    api "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
+//    api "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
+//    api "micdoodle8.mods:Galacticraft-Planets:1.7-3.0.12.504:Dev"
+    compile "team.chisel.ctmlib:CTMLib:MC1.7.10-1.4.1.5:deobf"
+    compile "team.chisel:Chisel:2.9.5.12:deobf"
+    compile "cofh:CoFHLib:1.7.10R3.0.3:dev"
+    compile "curse.maven:techguns-244201:2429662"
     compile "com.gregoriust.gregtech:gregtech_1.7.10:6.16.02:dev"
     compile "com.github.GTNewHorizons:NotEnoughItems:2.3.82-GTNH:dev"
     compile "maven.modrinth:baubles-expanded:2.1.4"

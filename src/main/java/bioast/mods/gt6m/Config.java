@@ -11,7 +11,8 @@ public enum Config {
         "Removes that Nasty Effects whenever you break a GT tool so no more Slowness and Ftigue. Gt tools are Bad enough!"),
     SCRAP_NO("QOL", "removeScrapOnBreak", true, "Do not return Scrap whenever a tool breaks"),
     ELECTRIC_DURIBILITY_NO("QOL", "removeElectricToolsDuribility", true,
-        "Electric tools no longer use any duribility just Electricity.");
+        "Electric tools no longer use any duribility just Electricity."),
+    ENABLE_ANIME_GIRLS("???", "Enable Anime Girls", false, "They Might become real... take your meds");
 
     enum EType {
         Boolean,
