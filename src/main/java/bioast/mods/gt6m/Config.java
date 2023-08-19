@@ -1,9 +1,9 @@
 package bioast.mods.gt6m;
 
-import java.io.File;
-
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+
+import java.io.File;
 
 public enum Config {
 
@@ -12,41 +12,27 @@ public enum Config {
     SCRAP_NO("QOL", "removeScrapOnBreak", true, "Do not return Scrap whenever a tool breaks"),
     ELECTRIC_DURIBILITY_NO("QOL", "removeElectricToolsDuribility", true,
         "Electric tools no longer use any duribility just Electricity."),
-    ENABLE_ANIME_GIRLS("???", "Enable Anime Girls", false, "They Might become real... take your meds");
+    ENABLE_ANIME_GIRLS("Z???", "Enable Anime Girls", false, "They Might become real... take your meds");
 
-    enum EType {
-        Boolean,
-        Integer,
-        Float
-    }
-
-    Config.EType type;
+    public static Configuration configuration;
     final String CATEGORY;
     final String KEY;
     final String COMMENT;
-
-    public boolean getBoolean() {
-        return property.getBoolean();
-    }
-
+    Config.EType type;
     boolean defaultBoolean;
     int defaultInteger;
     float defaultFloat;
-    public static Configuration configuration;
-    public static Property property;
-
+    private Property property;
     Config(String CATEGORY, String KEY) {
         this.CATEGORY = CATEGORY;
         this.KEY = KEY;
         this.COMMENT = "";
     }
-
     Config(String CATEGORY, String KEY, String COMMENT) {
         this.CATEGORY = CATEGORY;
         this.KEY = KEY;
         this.COMMENT = COMMENT;
     }
-
     Config(String CATEGORY, String KEY, Boolean boolIn, String cmt) {
         this(CATEGORY, KEY, cmt);
         defaultBoolean = boolIn;
@@ -65,18 +51,32 @@ public enum Config {
 
             switch (cfg.type) {
                 case Boolean:
-                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultBoolean, cfg.COMMENT);
+                    cfg.property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultBoolean, cfg.COMMENT);
                     break;
                 case Integer:
-                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultInteger, cfg.COMMENT);
+                    cfg.property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultInteger, cfg.COMMENT);
                     break;
                 case Float:
-                    property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultFloat, cfg.COMMENT);
+                    cfg.property = configuration.get(cfg.CATEGORY, cfg.KEY, cfg.defaultFloat, cfg.COMMENT);
                     break;
             }
         }
         if (configuration.hasChanged()) {
             configuration.save();
         }
+    }
+
+    public boolean getBoolean() {
+        return getProperty().getBoolean();
+    }
+
+    public Property getProperty() {
+        return property;
+    }
+
+    enum EType {
+        Boolean,
+        Integer,
+        Float
     }
 }

@@ -1,16 +1,15 @@
 package bioast.mods.gt6m.mixin.gregtech;
 
+import bioast.mods.gt6m.Config;
+import gregapi.item.multiitem.tools.ToolStats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-
+import net.minecraft.util.ChatComponentText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import bioast.mods.gt6m.Config;
-import gregapi.item.multiitem.tools.ToolStats;
 
 @Mixin(value = ToolStats.class, remap = false)
 public class GT_ToolStats_Mixin {
