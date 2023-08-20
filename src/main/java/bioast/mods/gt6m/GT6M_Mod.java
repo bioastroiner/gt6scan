@@ -1,15 +1,14 @@
 package bioast.mods.gt6m;
 
-import static bioast.mods.gt6m.GT6M_Mod.*;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static bioast.mods.gt6m.GT6M_Mod.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME, acceptedMinecraftVersions = "[1.7.10]")
 public class GT6M_Mod extends Abstract_Mod {
@@ -21,9 +20,17 @@ public class GT6M_Mod extends Abstract_Mod {
 
     public static final Logger LOG = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
-
+    public static GT6M_Mod instance;
     @SidedProxy(clientSide = "bioast.mods.gt6m.ClientProxy", serverSide = "bioast.mods.gt6m.CommonProxy")
     public static CommonProxy proxy;
+
+    GT6M_Mod() {
+        instance = this;
+    }
+
+    public static GT6M_Mod getInstance() {
+        return instance;
+    }
 
     @Override
     public String getModID() {
