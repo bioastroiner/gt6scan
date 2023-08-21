@@ -1,5 +1,7 @@
 package bioast.mods.gt6m;
 
+import bioast.mods.gt6m.proxy.CommonProxy;
+import bioast.mods.gt6m.scanner.item.ScannerMultiTool;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
@@ -21,7 +23,7 @@ public class GT6M_Mod extends Abstract_Mod {
     public static final Logger LOG = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
     public static GT6M_Mod instance;
-    @SidedProxy(clientSide = "bioast.mods.gt6m.ClientProxy", serverSide = "bioast.mods.gt6m.CommonProxy")
+    @SidedProxy(clientSide = "bioast.mods.gt6m.proxy.ClientProxy", serverSide = "bioast.mods.gt6m.proxy.CommonProxy")
     public static CommonProxy proxy;
 
 //    GT6M_Mod() {
@@ -90,6 +92,7 @@ public class GT6M_Mod extends Abstract_Mod {
 
     @Override
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
+        instance = this;
         proxy.preInit(aEvent);
     }
 
