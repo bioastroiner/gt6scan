@@ -24,13 +24,13 @@ public class GT6M_Mod extends Abstract_Mod {
     @SidedProxy(clientSide = "bioast.mods.gt6m.ClientProxy", serverSide = "bioast.mods.gt6m.CommonProxy")
     public static CommonProxy proxy;
 
-    GT6M_Mod() {
-        instance = this;
-    }
-
-    public static GT6M_Mod getInstance() {
-        return instance;
-    }
+//    GT6M_Mod() {
+//        instance = this;
+//    }
+//
+//    public static GT6M_Mod getInstance() {
+//        return instance;
+//    }
 
     @Override
     public String getModID() {
