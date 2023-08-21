@@ -38,6 +38,7 @@ dependencies {
     api "team.chisel.ctmlib:CTMLib:MC1.7.10-1.4.1.5:deobf"
     api "team.chisel:Chisel:2.9.5.12:deobf"
     api "cofh:CoFHLib:1.7.10R3.0.3:dev"
+    api "appeng:appliedenergistics2:rv3-beta-6:dev"
     api fileTree("libs/Techguns.beta.1.2_alphatest4.1.jar")
 //    api "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
 //    api "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
@@ -49,4 +50,14 @@ dependencies {
     compile 'com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev'
     compile "com.github.GTNewHorizons:NotEnoughItems:2.3.82-GTNH:dev"
     compile "maven.modrinth:baubles-expanded:2.1.4"
+
+
+//    compileOnly "applecore:AppleCore:1.7.10-3.1.1:deobf"
+//    compileOnly "ic2:IC2Classic:1.2.1.8:dev"
+//    compileOnly "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
+//    compileOnly "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
+//    compileOnly "openblocks:OpenBlocks:1.7.10-1.6-1.7.10:deobf"
+//    compileOnly "openmods:OpenModsLib:1.7.10-0.10:deobf"
+//    compileOnly "vazkii.botania:Botania:r1.8-250:deobf"
+//    compileOnly "com.mod-buildcraft:buildcraft:7.1.23:dev"
 }
