@@ -2,7 +2,7 @@ package bioast.mods.gt6m.proxy;
 
 import bioast.mods.gt6m.Config;
 import bioast.mods.gt6m.scanner.NetwrokHandler;
-import bioast.mods.gt6m.scanner.item.gui.ScannerGUI;
+import bioast.mods.gt6m.scanner.gui.ScannerGUI;
 import bioast.mods.gt6m.scanner.utils.VALs;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;

@@ -1,5 +1,7 @@
 package bioast.mods.gt6m.scanner;
 
+import bioast.mods.gt6m.scanner.gui.MapTexture;
+import bioast.mods.gt6m.scanner.gui.ScannerGUI;
 import gregapi.oredict.OreDictMaterial;
 
 import java.io.*;
@@ -17,18 +19,45 @@ public class PacketScanner {
     /**
      * [x,z] (y -> mat)
      */
-    public final HashMap<Byte, Short>[][] MAP_MAT;
-    public final HashMap<String, Integer> ORES_TO_RGB; // use decimals
-    public final HashMap<Short, String> META_TO_NAME;
+    public final HashMap<Byte, Short>[][] map;
+    public final HashMap<String, Integer> ores; // use decimals
+    public final HashMap<Short, String> metas; // metaID -> name
     public PacketScanner(int chunkX, int chunkZ, int posX, int posZ, int size){
         this.chunkX = chunkX;
         this.chunkZ = chunkZ;
         this.posX = posX;
         this.posZ = posZ;
         this.size = size;
-        this.MAP_MAT = new HashMap[getSize()][getSize()];
-        this.ORES_TO_RGB = new HashMap<>();
-        this.META_TO_NAME = new HashMap<>();
+        this.map = new HashMap[getSize()][getSize()];
+        this.ores = new HashMap<>();
+        this.metas = new HashMap<>();
+    }
+    public static Object decode(InputStream in) throws IOException {
+        // Read Data, Recieved on Client?
+        // Add Ores to List Here
+        DataInput aData = new DataInputStream(new java.util.zip.GZIPInputStream(in));
+        PacketScanner packet = new PacketScanner(aData.readInt(),aData.readInt(),aData.readInt(),aData.readInt(),aData.readInt());
+        int aSize = (packet.size * 2 + 1) * 16;
+        int checked = 0;
+        for (int i = 0; i < aSize; i++) {
+            for (int j = 0; j < aSize; j++) {
+                byte kSize = aData.readByte();
+                // for getting highest y level
+                if(kSize==0) continue;
+                packet.map[i][j] = new HashMap<>();
+                for (int k = 0; k < kSize; k++) {
+                    final byte y = aData.readByte();
+                    final short meta = aData.readShort();
+                    packet.map[i][j].put(y, meta);
+                    mapOre(meta, packet);
+                    checked++;
+                }
+            }
+        }
+        // validate packet
+        int checked_expected = aData.readInt();
+        if(checked!=checked_expected) return null;
+        return packet;
     }
     public int getPacketID() {
         return 0;
@@ -36,12 +65,17 @@ public class PacketScanner {
 
     public void encode(OutputStream out) throws IOException {
         // Write Data
-        DataOutputStream stream = new DataOutputStream(new GZIPOutputStream(out));stream.writeInt(chunkX);stream.writeInt(chunkZ);stream.writeInt(posX);stream.writeInt(posZ);stream.writeInt(size);
+        DataOutputStream stream = new DataOutputStream(new GZIPOutputStream(out));
+        stream.writeInt(chunkX);
+        stream.writeInt(chunkZ);
+        stream.writeInt(posX);
+        stream.writeInt(posZ);
+        stream.writeInt(size);
         int aSize = (size * 2 + 1) * 16;
         int checked = 0;
         for (int i = 0; i < aSize; i++) {
             for (int j = 0; j < aSize; j++) {
-                HashMap<Byte, Short> data = MAP_MAT[i][j];
+                HashMap<Byte, Short> data = map[i][j];
                 if(data!=null){
                      stream.writeByte(data.keySet().size());
                     for (byte y: data.keySet()) {
@@ -58,44 +92,18 @@ public class PacketScanner {
         }
     }
 
-    public static Object decode(InputStream in) throws IOException {
-        // Read Data, Recieved on Client?
-        // Add Ores to List Here
-        DataInput aData = new DataInputStream(new java.util.zip.GZIPInputStream(in));
-        PacketScanner packet = new PacketScanner(aData.readInt(),aData.readInt(),aData.readInt(),aData.readInt(),aData.readInt());
-        int aSize = (packet.size * 2 + 1) * 16;
-        int checked = 0;
-        for (int i = 0; i < aSize; i++) {
-            for (int j = 0; j < aSize; j++) {
-                byte kSize = aData.readByte();
-                // for getting highest y level
-                if(kSize==0) continue;
-                packet.MAP_MAT[i][j] = new HashMap<>();
-                for (int k = 0; k < kSize; k++) {
-                    final byte y = aData.readByte();
-                    final short meta = aData.readShort();
-                    packet.MAP_MAT[i][j].put(y, meta);
-                    mapOre(meta, packet);
-                    checked++;
-                }
-            }
-        }
-        // validate packet
-        int checked_expected = aData.readInt();
-        if(checked!=checked_expected) return null;
-        return packet;
-    }
+
 
     public static void mapOre(short meta, PacketScanner packet) {
-        // TODO Add Ores Here to the map
         OreDictMaterial tMaterial = OreDictMaterial.MATERIAL_ARRAY[meta];
         short[] rgba = tMaterial.fRGBaSolid;
         int rgba_hex = ((rgba[0] & 0xFF) << 16) + ((rgba[1] & 0xFF) << 8) + ((rgba[2] & 0xFF));
-        packet.ORES_TO_RGB.put(tMaterial.mNameInternal,rgba_hex);
-        packet.META_TO_NAME.put(meta, tMaterial.mNameInternal);
+        packet.ores.put(tMaterial.mNameInternal,rgba_hex);
+        packet.metas.put(meta, tMaterial.mNameInternal);
     }
 
     public void process() {
+        ScannerGUI.newMap(new MapTexture(this));
         proxy.openProspectorGUI();
     }
 
@@ -106,7 +114,7 @@ public class PacketScanner {
     public void addBlock(int x, int y, int z, short metaData) {
         int aX = x - (chunkX - size) * 16;
         int aZ = z - (chunkZ - size) * 16;
-        if (MAP_MAT[aX][aZ] == null) MAP_MAT[aX][aZ] = new HashMap<>();
-        MAP_MAT[aX][aZ].put((byte) y, metaData);
+        if (map[aX][aZ] == null) map[aX][aZ] = new HashMap<>();
+        map[aX][aZ].put((byte) y, metaData);
     }
 }

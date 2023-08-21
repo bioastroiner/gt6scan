@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.scanner.item.gui;
+package bioast.mods.gt6m.scanner.gui;
 
 import bioast.mods.gt6m.scanner.PacketScanner;
 import net.minecraft.client.renderer.Tessellator;
@@ -10,7 +10,6 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 
 public class MapTexture extends AbstractTexture {
     public final PacketScanner packet;
@@ -35,12 +34,12 @@ public class MapTexture extends AbstractTexture {
         for (int i = 0; i < wh; i++) {
             for (int j = 0; j < wh; j++) {
                 image.setRGB(i, j, backgroundColor);
-                if (packet.MAP_MAT[i][j] != null) {
-                    for (short meta : packet.MAP_MAT[i][j].values()) {
-                        final String name = packet.META_TO_NAME.get(meta);
+                if (packet.map[i][j] != null) {
+                    for (short meta : packet.map[i][j].values()) {
+                        final String name = packet.metas.get(meta);
                         if (!selected.equals("All") && !selected.equals(name)) continue;
 
-                        image.setRGB(i, j, packet.ORES_TO_RGB.getOrDefault(name, Color.BLACK.getRGB()) | 0XFF000000);
+                        image.setRGB(i, j, packet.ores.getOrDefault(name, Color.BLACK.getRGB()) | 0XFF000000);
                         break;
                     }
 //                    } else if (packet.ptype == 3) {

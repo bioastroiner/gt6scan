@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.scanner.item.gui;
+package bioast.mods.gt6m.scanner.gui;
 
 import cpw.mods.fml.client.GuiScrollingList;
 import net.minecraft.client.gui.GuiScreen;

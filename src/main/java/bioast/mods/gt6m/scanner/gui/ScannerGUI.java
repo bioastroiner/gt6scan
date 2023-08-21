@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.scanner.item.gui;
+package bioast.mods.gt6m.scanner.gui;
 
 import bioast.mods.gt6m.scanner.utils.VALs;
 import net.minecraft.client.gui.GuiScreen;
@@ -43,7 +43,7 @@ public class ScannerGUI extends GuiScreen {
                     aY + currentHeight,
                     aX + currentWidth,
                     10,
-                    map.packet.ORES_TO_RGB,
+                    map.packet.ores,
                     ((name, invert) -> { if (map != null) map.loadTexture(null, name, invert); }));
             prevW = width;
             prevH = height;

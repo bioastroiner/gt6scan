@@ -1,6 +1,7 @@
 package bioast.mods.gt6m.scanner;
 
 import bioast.mods.gt6m.scanner.utils.VALs;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -48,6 +49,7 @@ public class NetwrokHandler extends MessageToMessageCodec<FMLProxyPacket, Packet
                 .set(FMLOutboundHandler.OutboundTarget.PLAYER);
         this.mChannel.get(Side.SERVER).attr(FMLOutboundHandler.FML_MESSAGETARGETARGS).set(aPlayer);
         this.mChannel.get(Side.SERVER).writeAndFlush(aPacket);
+        sendToServer(aPacket);
     }
 
     public void sendToServer(PacketScanner aPacket) {
@@ -64,5 +66,15 @@ public class NetwrokHandler extends MessageToMessageCodec<FMLProxyPacket, Packet
             aPacket.process();
         }
 
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+            super.channelInactive(ctx);
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            ((PacketScanner)msg).process();
+            super.channelRead(ctx, msg);
+        }
     }
 }
