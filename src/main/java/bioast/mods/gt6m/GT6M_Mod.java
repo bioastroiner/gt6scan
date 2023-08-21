@@ -5,8 +5,10 @@ import bioast.mods.gt6m.scanner.item.ScannerMultiTool;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.network.NetworkRegistry;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
+import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -94,10 +96,13 @@ public class GT6M_Mod extends Abstract_Mod {
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
         instance = this;
         proxy.preInit(aEvent);
+        new ScannerMultiTool();
     }
 
     @Override
     public void onModInit2(FMLInitializationEvent aEvent) {
+        MinecraftForge.EVENT_BUS.register(this);
+        NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
         proxy.init(aEvent);
     }
 
