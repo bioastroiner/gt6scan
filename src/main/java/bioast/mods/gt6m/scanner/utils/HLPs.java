@@ -3,12 +3,18 @@ package bioast.mods.gt6m.scanner.utils;
 import bioast.mods.gt6m.GT6M_Mod;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
+import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.WD;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HLPs {
     public static boolean ore(Block aBlock, Short aMeta) {
@@ -42,7 +48,43 @@ public class HLPs {
     return tBlock;
     }
 
+    public static Map<ChunkPosition,OreDictMaterial> ores(Chunk aChunk,OreDictPrefix compare){
+        Map<ChunkPosition,OreDictMaterial> map = new HashMap<>();
+        Map<ChunkPosition,TileEntity> chunkTileEntityMap = aChunk.chunkTileEntityMap;
+        for(ChunkPosition cPos:chunkTileEntityMap.keySet()){
+            PrefixBlockTileEntity tTile = null;
+            try{
+                tTile = (PrefixBlockTileEntity) chunkTileEntityMap.get(cPos);
+            } catch (Exception e) {continue;}
+            if(prefix(tTile).mFamiliarPrefixes.contains(compare)){
+                map.put(cPos,mat(tTile));
+            }
+        }
+        return map;
+    }
+
+    public static Map<ChunkPosition,OreDictMaterial> oresSmall(Chunk aChunk){
+        return ores(aChunk,OP.oreSmall);
+    }
+
+    public static Map<ChunkPosition,OreDictMaterial> oresLarge(Chunk aChunk){
+        return ores(aChunk,OP.ore);
+    }
+
+    public static Map<ChunkPosition,OreDictMaterial> oresBedrock(Chunk aChunk){
+        return ores(aChunk,OP.oreBedrock);
+    }
+
     public static OreDictPrefix prefix(TileEntity aTile){
         return prefixBlock(aTile).mPrefix;
     }
+
+    public static OreDictMaterial mat(TileEntity aTile){
+        return OreDictMaterial.MATERIAL_ARRAY[((PrefixBlockTileEntity)aTile).mMetaData];
+    }
+
+//    public static void scanChunk(Chunk aChunk){
+//        Map<ChunkPosition,OreDictMaterial> oresLarge = oresLarge(aChunk);
+//
+//    }
 }
