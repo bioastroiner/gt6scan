@@ -71,39 +71,34 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
 
             List<List<IWidget>> matrix = new ArrayList<>();
             int chunkSize = 10;
-            //int[][] chunk = new int[chunkSize][chunkSize];
+            int[][] chunk = new int[chunkSize][chunkSize];
             Rectangle[][] block = new Rectangle[16*chunkSize][16*chunkSize];
             IWidget[][] blockW = new IWidget[16*chunkSize][16*chunkSize];
             Grid grid = new Grid().margin(0).minColWidth(0).minRowHeight(0);
             // Draw each Chunk
-            for (int c = 0; c < chunkSize; c++) {
-                int chunkOffset = c * 16;
-                for (int j = 0; j < 16; j++) { // j -> columns
-                    List<IWidget> row = new ArrayList<>();
-                    for (int i = 0; i < 16; i++) { // i -> rows // we like to iterate rows first
-                        int ic,jc; ic = i + chunkOffset; jc = j + chunkOffset;
-                        // We Skip 16th block to draw Borders
-                        block[ic][jc] = new Rectangle().setColor(UT.Code.getRGBaInt(MT.As.mRGBaSolid));
-                        if(i==15||j==15) block[ic][jc] = new Rectangle().setColor(UT.Code.getRGBaInt(MT.Rubber.mRGBaSolid));
-                        blockW[ic][jc] = block[ic][jc].asWidget().size(1,1);
-                        row.add(blockW[ic][jc]);
+            for (int cy = 0; cy < chunkSize; cy++) {
+                for (int cx = 0; cx < chunkSize; cx++) {
+                    int chunkOffsetX = cx * 16;int chunkOffsetY = cy * 16;
+                    for (int j = 0; j < 16; j++) { // j -> columns
+                        for (int i = 0; i < 16; i++) { // i -> rows // we like to iterate rows first
+                            int ic,jc; ic = i + chunkOffsetX; jc = j + chunkOffsetY;
+                            // We Skip 16th block to draw Borders
+                            block[ic][jc] = new Rectangle().setColor(UT.Code.getRGBaInt(MT.As.mRGBaSolid));
+                            if(i==15||j==15) block[ic][jc] = new Rectangle().setColor(UT.Code.getRGBaInt(MT.Rubber.mRGBaSolid));
+                            blockW[ic][jc] = block[ic][jc].asWidget().size(1,1);
+                        }
                     }
-                    matrix.add(row);
                 }
             }
+            for (int i = 0; i < blockW.length; i++) {
+                List<IWidget> row = new ArrayList<>();
+                for (int j = 0; j < blockW[i].length; j++) {
+                    IWidget widget = blockW[j][i];
+                    row.add(widget);
+                }
+                matrix.add(row);
+            }
             grid.matrix(matrix);
-//            for (int i = 0; i < 400; i++) {
-//                int r = i / 20;
-//                int c = i % 20;
-//                List<IWidget> row;
-//                if (matrix.size() <= r) {
-//                    row = new ArrayList<>();
-//                    matrix.add(row);
-//                } else {
-//                    row = matrix.get(r);
-//                }
-//                row.add(new Rectangle().setColor(UT.Code.getRGBaInt(MT.Cu.mRGBaSolid)).asWidget().size(1,1));
-//            }
             panel.child(grid
                 .pos(10, 10).right(10).bottom(10));
             return panel;
