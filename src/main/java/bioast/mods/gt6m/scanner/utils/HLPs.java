@@ -3,9 +3,11 @@ package bioast.mods.gt6m.scanner.utils;
 import bioast.mods.gt6m.GT6M_Mod;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
+import gregapi.data.MT;
 import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
+import gregapi.util.UT;
 import gregapi.util.WD;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
@@ -50,7 +52,12 @@ public class HLPs {
 
     public static Map<ChunkPosition,OreDictMaterial> ores(Chunk aChunk,OreDictPrefix compare){
         Map<ChunkPosition,OreDictMaterial> map = new HashMap<>();
-        Map<ChunkPosition,TileEntity> chunkTileEntityMap = aChunk.chunkTileEntityMap;
+        Map<ChunkPosition,TileEntity> chunkTileEntityMap = new HashMap<>();
+        try {
+            chunkTileEntityMap = aChunk.chunkTileEntityMap;
+        } catch (Exception e) {
+            // ignore
+        }
         for(ChunkPosition cPos:chunkTileEntityMap.keySet()){
             PrefixBlockTileEntity tTile = null;
             try{
@@ -81,6 +88,23 @@ public class HLPs {
 
     public static OreDictMaterial mat(TileEntity aTile){
         return OreDictMaterial.MATERIAL_ARRAY[((PrefixBlockTileEntity)aTile).mMetaData];
+    }
+
+    public static int col(OreDictMaterial aMat){
+        return UT.Code.getRGBaInt(aMat.mRGBaSolid);
+    }
+
+    /**
+     * @return gets the most top GT ores in a chunk and maps it into ChunkPositions
+     */
+    public static Map<ChunkPosition,OreDictMaterial> oreTop(Chunk aChunk,OreDictPrefix aPrefix){
+        Map<ChunkPosition,OreDictMaterial> aMap = new HashMap<>();
+        ores(aChunk,aPrefix).forEach((chunkPosition, oreDictMaterial) -> {
+            for (int i = 0; i < chunkPosition.chunkPosX; i++) {
+
+            }
+        });
+        return aMap;
     }
 
 //    public static void scanChunk(Chunk aChunk){
