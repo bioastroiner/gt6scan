@@ -176,11 +176,11 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                         for (int j = 0; j < block[i].length; j++) {
                             if (block[i][j] == col(MT.White)) continue;
                             GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
-//                            if (i == playerXGui && j == playerZGui)
-//                                GuiDraw.drawBorder(i, j, 2f, 2f, Color.argb(1f, 0f, 0f, 0.3f), 0.5f);
                         }
                     }
-                    //GuiDraw.drawDropCircleShadow();
+                    for (int i = 0; i < block.length; i++) {
+
+                    }
                 }
 
                 @Override
