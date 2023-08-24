@@ -1,6 +1,7 @@
 package bioast.mods.gt6m.scanner;
 
 import bioast.mods.gt6m.GT6M_Mod;
+import bioast.mods.gt6m.network.PacketScannerData;
 import bioast.mods.gt6m.scanner.item.ScannerToolStats;
 import bioast.mods.gt6m.scanner.utils.VALs;
 import com.cleanroommc.modularui.api.IItemGuiHolder;
@@ -20,6 +21,8 @@ import gregapi.data.OP;
 import gregapi.item.multiitem.MultiItemTool;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.util.UT;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -27,6 +30,7 @@ import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +39,7 @@ import java.util.Map;
 
 import static bioast.mods.gt6m.GT6M_Mod.LOG;
 import static bioast.mods.gt6m.scanner.utils.HLPs.*;
+import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
 
 public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
 
@@ -52,43 +57,94 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
         addTool(0, "Scanner", "Open it", new ScannerToolStats(6), "toolScanner");
     }
 
+    // TODO optimize
+    public static void drawRect(float x0, float y0, float w, float h, int color) {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        float x1 = x0 + w, y1 = y0 + h;
+        Tessellator.instance.startDrawingQuads();
+        bufferbuilder.pos(x0, y0, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+        bufferbuilder.pos(x0, y1, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+        bufferbuilder.pos(x1, y1, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+        bufferbuilder.pos(x1, y0, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+        Tessellator.instance.draw();
+        GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
+
     @Override
     public ItemStack onItemRightClick(ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
         scanned_on_server = false;
+        List<String> chat = new ArrayList<>();
         if (!aWorld.isRemote) {
+            chat.add("--Server--");
             oresFound = 0;
-            Map tMap = aWorld.getChunkFromBlockCoords((int) aPlayer.posX, (int) aPlayer.posZ).chunkTileEntityMap;
-            Map<ChunkPosition, TileEntity> tTileMap;
-            if (tMap != null) {
-                try {
-                    tTileMap = (Map<ChunkPosition, TileEntity>) (tMap);
-                    tTileMap.forEach((chunkPos, tile) -> {
-                        if (tile instanceof PrefixBlockTileEntity pTile) {
-                            PrefixBlock pBlock = prefixBlock(pTile);
-                            if (pBlock.mPrefix.mFamiliarPrefixes.contains(OP.ore)) {
-                                oresFound++;
-                                // it's an Ore we found One!
-                                OreDictMaterial tMaterial = mat(pTile);
-                                MapOre.from(pTile.getX(), pTile.getY(), pTile.getZ(), tMaterial);
-                            }
+            //Map tMap = aWorld.getChunkFromBlockCoords((int) aPlayer.posX, (int) aPlayer.posZ).chunkTileEntityMap;
+            final int PLAYER_CHUNK_INDEX = (chunkSize + 1) / 2;
+            final Chunk PLAYER_CHUNK = chunks[PLAYER_CHUNK_INDEX][PLAYER_CHUNK_INDEX] = aWorld.getChunkFromBlockCoords((int) aPlayer.posX, (int) aPlayer.posZ);
+            chat.add(" -Player Chunk Index: " + PLAYER_CHUNK_INDEX);
+            chat.add(" -Player Chunk Pos  : " + PLAYER_CHUNK.xPosition + " - " + PLAYER_CHUNK.zPosition);
+
+            //TODO fix bound exception
+            for (int i = 0; i < chunkSize; i++) {
+                for (int j = 0; j < chunkSize; j++) {
+                    final int CHUNK_X = (PLAYER_CHUNK.xPosition - PLAYER_CHUNK_INDEX) + i;
+                    final int CHUNK_Z = (PLAYER_CHUNK.zPosition + PLAYER_CHUNK_INDEX) - j;
+                    chunks[i][j] = aWorld.getChunkFromChunkCoords(CHUNK_X, CHUNK_Z);
+                }
+            }
+            for (int i = 0; i < chunkSize; i++) {
+                for (int j = 0; j < chunkSize; j++) {
+                    Chunk currentChunk = chunks[i][j];
+                    chat.add("Chunk (" + i + "," + j + "): " + "X: " + currentChunk.xPosition + ", Z: " + currentChunk.zPosition);
+                    // do stuff with the chunks
+                    Map tMap = currentChunk.chunkTileEntityMap;
+                    Map<ChunkPosition, TileEntity> tTileMap;
+                    if (tMap != null) {
+                        try {
+                            tTileMap = (Map<ChunkPosition, TileEntity>) (tMap);
+                            PacketScannerData packet = new PacketScannerData();
+                            tTileMap.forEach((chunkPos, tile) -> {
+                                if (tile instanceof PrefixBlockTileEntity pTile) {
+                                    PrefixBlock pBlock = prefixBlock(pTile);
+                                    if (pBlock.mPrefix.mFamiliarPrefixes.contains(OP.ore)) {
+                                        oresFound++;
+                                        // it's an Ore we found One!
+                                        short matID = pTile.mMetaData;
+                                        int x = pTile.getX();
+                                        int y = pTile.getY();
+                                        int z = pTile.getZ();
+                                        //packet.addOreHere(x,y,z,matID);
+                                        OreDictMaterial tMaterial = mat(pTile);
+                                        // do the rest of logic over Client
+                                        MapOre.from(pTile.getX(), pTile.getY(), pTile.getZ(), tMaterial);
+                                    }
+                                }
+                            });
+                            //CommonProxy.NetwrokHandler.sendToPlayer(packet, (EntityPlayerMP) aPlayer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-
-
-                    });
-                    scanned_on_server = true;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    }
                 }
             }
         } else {
             GuiInfos.PLAYER_ITEM_MAIN_HAND.open(aPlayer);
         }
-        UT.Entities.sendchat(aPlayer, "Found " + oresFound + " Ores.");
+        chat.add("Found " + oresFound + " Ores.");
+        UT.Entities.sendchat(aPlayer, chat, false);
         return super.onItemRightClick(aStack, aWorld, aPlayer);
     }
 
     @Override
     public void buildSyncHandler(GuiSyncHandler guiSyncHandler, EntityPlayer entityPlayer, ItemStack itemStack) {
+        //guiSyncHandler.syncValue(0,SyncHandlers.)
+
     }
 
     @Override
@@ -111,10 +167,6 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
             int z0 = topLeftChunk.func_151349_a(0).chunkPosZ;
             int playerXGui = Math.abs(playerX - x0);
             int playerZGui = Math.abs(playerZ - z0);
-            if (scanned_on_server) {
-                // Should Use Packets here
-
-            }
             for (int cz = 0; cz < chunkSize; cz++) {
                 for (int cx = 0; cx < chunkSize; cx++) {
                     //Chunk chunk = chunks[cx][cz];
@@ -146,12 +198,14 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                     //if(hasDrawn) return;
                     for (int i = 0; i < block.length; i++) {
                         for (int j = 0; j < block[i].length; j++) {
+                            if (block[i][j] == col(MT.LightGray)) continue;
                             GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
                             if (i == playerXGui && j == playerZGui)
-                                GuiDraw.drawRect(i, j, 2f, 2f, Color.argb(1f, 0f, 0f, 0.3f));
+                                GuiDraw.drawBorder(i, j, 2f, 2f, Color.argb(1f, 0f, 0f, 0.3f), 0.5f);
                         }
                     }
                     hasDrawn = true;
+                    //GuiDraw.drawDropCircleShadow();
                 }
 
                 @Override
