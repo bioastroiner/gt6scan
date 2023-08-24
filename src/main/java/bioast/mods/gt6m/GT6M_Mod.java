@@ -21,7 +21,7 @@ public class GT6M_Mod extends Abstract_Mod {
     public static final String VERSION = "GRADLETOKEN_VERSION";
     public static final String GROUPNAME = "GRADLETOKEN_GROUPNAME";
 
-    public static final Logger LOG = LogManager.getLogger(MODID);
+    public static final Logger debug = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
     public static GT6M_Mod instance;
     @SidedProxy(clientSide = "bioast.mods.gt6m.proxy.ClientProxy", serverSide = "bioast.mods.gt6m.proxy.CommonProxy")

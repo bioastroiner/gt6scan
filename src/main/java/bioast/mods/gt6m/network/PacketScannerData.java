@@ -118,7 +118,7 @@ public class PacketScannerData implements IPacket {
     public void process(IBlockAccess aWorld, INetworkHandler aNetworkHandler) {
         if (aWorld instanceof World) {
             GuiInfos.PLAYER_ITEM_MAIN_HAND.open(Minecraft.getMinecraft().thePlayer);
-            GT6M_Mod.LOG.info("process on client");
+            GT6M_Mod.debug.info("process on client");
 
             //Item item = Minecraft.getMinecraft().thePlayer.getHeldItem().getItem();
 //            if(item instanceof bioast.mods.gt6m.scanner.ScannerMultiTool)
@@ -132,15 +132,4 @@ public class PacketScannerData implements IPacket {
         }
     }
 
-    class DataOre {
-        public final int x, y, z;
-        public final short matID;
-
-        public DataOre(int x, int y, int z, short matID) {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.matID = matID;
-        }
-    }
 }

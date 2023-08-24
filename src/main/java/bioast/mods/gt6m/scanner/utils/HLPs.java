@@ -3,7 +3,6 @@ package bioast.mods.gt6m.scanner.utils;
 import bioast.mods.gt6m.GT6M_Mod;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
-import gregapi.data.MT;
 import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
@@ -45,7 +44,7 @@ public class HLPs {
             World tWorld = aTile.getWorldObj();
             tBlock = (PrefixBlock) tWorld.getBlock(tTile.xCoord, tTile.yCoord, tTile.zCoord);
         } catch (Exception e){
-            GT6M_Mod.LOG.error("Not a PrefixBlock");
+            GT6M_Mod.debug.error("Not a PrefixBlock");
         }
     return tBlock;
     }
