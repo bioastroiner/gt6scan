@@ -1,7 +1,7 @@
 package bioast.mods.gt6m;
 
 import bioast.mods.gt6m.proxy.CommonProxy;
-import bioast.mods.gt6m.scanner.ScannerMultiTool;
+import bioast.mods.gt6m.scanner.item.ScannerMultiTool;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;

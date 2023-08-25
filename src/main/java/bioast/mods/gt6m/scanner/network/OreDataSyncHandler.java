@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.network;
+package bioast.mods.gt6m.scanner.network;
 
 import com.cleanroommc.modularui.api.sync.ValueSyncHandler;
 import net.minecraft.network.PacketBuffer;
@@ -8,14 +8,14 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class OreSyncHandler extends ValueSyncHandler<List<DataOre>> {
+public class OreDataSyncHandler extends ValueSyncHandler<List<OreData>> {
 
-    private final Supplier<List<DataOre>> getter;
-    private final Consumer<List<DataOre>> setter;
-    private List<DataOre> cache;
+    private final Supplier<List<OreData>> getter;
+    private final Consumer<List<OreData>> setter;
+    private List<OreData> cache;
     private int size;
 
-    public OreSyncHandler(Supplier<List<DataOre>> getter, Consumer<List<DataOre>> setter) {
+    public OreDataSyncHandler(Supplier<List<OreData>> getter, Consumer<List<OreData>> setter) {
         this.getter = getter;
         this.setter = setter;
         this.cache = getter.get();
@@ -23,12 +23,12 @@ public class OreSyncHandler extends ValueSyncHandler<List<DataOre>> {
     }
 
     @Override
-    public List<DataOre> getCachedValue() {
+    public List<OreData> getCachedValue() {
         return this.cache;
     }
 
     @Override
-    public void setValue(List<DataOre> value) {
+    public void setValue(List<OreData> value) {
         this.cache = value;
     }
 
@@ -41,7 +41,7 @@ public class OreSyncHandler extends ValueSyncHandler<List<DataOre>> {
     public void updateAndWrite(PacketBuffer buffer) {
         setValue(this.getter.get());
         buffer.writeInt(cache.size());
-        for (DataOre data : cache) {
+        for (OreData data : cache) {
             buffer.writeInt(data.x);
             buffer.writeInt(data.y);
             buffer.writeInt(data.z);
@@ -54,7 +54,7 @@ public class OreSyncHandler extends ValueSyncHandler<List<DataOre>> {
         this.cache = new ArrayList<>();
         this.size = buffer.readInt();
         for (int i = 0; i < this.size; i++) {
-            DataOre data = new DataOre(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readShort());
+            OreData data = new OreData(buffer.readInt(), buffer.readInt(), buffer.readInt(), buffer.readShort());
             this.cache.add(data);
         }
         setValue(this.cache);
@@ -62,7 +62,7 @@ public class OreSyncHandler extends ValueSyncHandler<List<DataOre>> {
     }
 
     @Override
-    public void updateFromClient(List<DataOre> value) {
+    public void updateFromClient(List<OreData> value) {
         this.setter.accept(value);
         syncToServer(0, this::updateAndWrite);
     }
