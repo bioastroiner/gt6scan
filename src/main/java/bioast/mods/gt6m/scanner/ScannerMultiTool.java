@@ -70,18 +70,20 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
             this.oresFound = 0;
             chat.add("--Server--");
             final int PLAYER_CHUNK_INDEX = (chunkSize - 1) / 2;
-            final Chunk PLAYER_CHUNK = chunks[PLAYER_CHUNK_INDEX][PLAYER_CHUNK_INDEX] = aWorld.getChunkFromBlockCoords((int) aPlayer.posX, (int) aPlayer.posZ);
+            chunks[PLAYER_CHUNK_INDEX][PLAYER_CHUNK_INDEX] = aWorld.getChunkFromBlockCoords((int) aPlayer.posX, (int) aPlayer.posZ);
+            final Chunk PLAYER_CHUNK = chunks[PLAYER_CHUNK_INDEX][PLAYER_CHUNK_INDEX];
+            chunks[0][0] = aWorld.getChunkFromChunkCoords(PLAYER_CHUNK.xPosition - ((chunkSize - 1) / 2), PLAYER_CHUNK.zPosition - ((chunkSize - 1) / 2));
             chat.add(" -Player Chunk Index: " + PLAYER_CHUNK_INDEX);
             chat.add(" -Player Chunk Pos  : " + PLAYER_CHUNK.xPosition + " - " + PLAYER_CHUNK.zPosition);
             for (int i = 0; i < chunkSize; i++) {
                 for (int j = 0; j < chunkSize; j++) {
-                    final int CHUNK_X = (PLAYER_CHUNK.xPosition - PLAYER_CHUNK_INDEX) + i;
-                    final int CHUNK_Z = (PLAYER_CHUNK.zPosition + PLAYER_CHUNK_INDEX) - j;
-                    chunks[i][j] = aWorld.getChunkFromChunkCoords(CHUNK_X, CHUNK_Z);
+                    if (i == 0 && j == 0) continue;
+                    if (i == PLAYER_CHUNK_INDEX && j == PLAYER_CHUNK_INDEX) continue;
+                    chunks[i][j] = aWorld.getChunkFromChunkCoords(chunks[0][0].xPosition + i, chunks[0][0].zPosition + j);
                 }
             }
-            x_origin = chunks[0][0].getChunkCoordIntPair().getCenterXPos() - 7;
-            z_origin = chunks[0][0].getChunkCoordIntPair().getCenterZPosition() - 8;
+            x_origin = (chunks[0][0].xPosition << 4);
+            z_origin = (chunks[0][0].zPosition << 4);
             for (int i = 0; i < chunkSize; i++) {
                 for (int j = 0; j < chunkSize; j++) {
                     Chunk currentChunk = chunks[i][j];
@@ -118,16 +120,14 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
             boolean smallOres;
             for (int chunkGridX = 0; chunkGridX < chunkSize; chunkGridX++) {
                 for (int chunkGridZ = 0; chunkGridZ < chunkSize; chunkGridZ++) {
-                    int chunkOffsetX = chunkGridZ * 16;
-                    int chunkOffsetZ = chunkGridX * 16;
-                    for (int z = 0; z < 16; z++) { // j -> columns
-                        for (int x = 0; x < 16; x++) { // i -> rows // we like to iterate rows first
+                    for (int z = 0; z < 16; z++) {
+                        for (int x = 0; x < 16; x++) {
                             int blockGridX, blockGridZ;
                             boolean isOre = false;
-                            blockGridX = x + chunkOffsetX;
-                            blockGridZ = z + chunkOffsetZ;
-                            int blockWorldX = x_origin + chunkGridZ * 16 + blockGridX;
-                            int blockWorldZ = z_origin - chunkGridX * 16 - blockGridZ;
+                            blockGridX = x + chunkGridX * 16;
+                            blockGridZ = z + chunkGridZ * 16;
+                            int blockWorldX = x_origin + blockGridX;
+                            int blockWorldZ = z_origin + blockGridZ;
                             int lastY = 0;
                             try {
                                 if (scannedOres != null && !scannedOres.isEmpty())
@@ -148,9 +148,9 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                             if (isOre) {
                                 block[blockGridX][blockGridZ] = oreColor;
                             }
-                            if (x == 15 || z == 15) // We Skip 16th block to draw Borders
+                            if (x == 15 || z == 15 || x == 0 || z == 0) // We Skip 16th block to draw Borders
                                 block[blockGridX][blockGridZ] = borderColor;
-                            if (chunkGridZ == 4 && chunkGridX == 4 && x == 7 && z == 7)
+                            if (chunkGridZ == (chunkSize - 1) / 2 && chunkGridX == (chunkSize - 1) / 2 && x == 7 && z == 7)
                                 block[blockGridX][blockGridZ] = col(MT.Red);
                         }
                     }
@@ -172,20 +172,16 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                 @Override
                 public void draw(GuiContext context, int x, int y, int width, int height) {
                     //if(hasDrawn) return;
-                    for (int i = 0; i < block.length; i++) {
-                        for (int j = 0; j < block[i].length; j++) {
+                    for (int i = 0; i < 16 * chunkSize; i++) {
+                        for (int j = 16 * chunkSize - 1; j > 0; j--) {
                             if (block[i][j] == col(MT.White)) continue;
                             GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
                         }
+//                        for (int j = 0; j < 16*chunkSize; j++) {
+//                            //if (block[i][j] == col(MT.White)) continue;
+//                            GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
+//                        }
                     }
-                    for (int i = 0; i < block.length; i++) {
-
-                    }
-                }
-
-                @Override
-                public Widget<?> asWidget() {
-                    return IDrawable.super.asWidget();
                 }
             }.asWidget().pos(10, 10).right(10).bottom(10);
             panel.child(mapWidget);
