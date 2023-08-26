@@ -10,7 +10,6 @@ import com.cleanroommc.modularui.drawable.GuiDraw;
 import com.cleanroommc.modularui.manager.GuiInfos;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
-import com.cleanroommc.modularui.screen.viewport.GuiContext;
 import com.cleanroommc.modularui.sync.GuiSyncHandler;
 import com.cleanroommc.modularui.sync.SyncHandlers;
 import com.cleanroommc.modularui.widget.Widget;
@@ -172,22 +171,19 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
     public ModularScreen createGuiScreen(EntityPlayer player, ItemStack itemStack) {
         return ModularScreen.simple("ores_screen", guiContext -> {
             ModularPanel panel = ModularPanel.defaultPanel(guiContext);
-            Widget mapWidget = new IDrawable() {
-                @Override
-                public void draw(GuiContext context, int x, int y, int width, int height) {
-                    //if(hasDrawn) return;
-                    for (int i = 0; i < 16 * chunkSize; i++) {
-                        for (int j = 16 * chunkSize - 1; j > 0; j--) {
-                            if (block[i][j] == col(MT.White)) continue;
-                            GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
-                        }
-//                        for (int j = 0; j < 16*chunkSize; j++) {
-//                            //if (block[i][j] == col(MT.White)) continue;
-//                            GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
-//                        }
+            Widget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
+                //if(hasDrawn) return;
+                for (int i = 0; i < 16 * chunkSize; i++) {
+                    for (int j = 16 * chunkSize - 1; j > 0; j--) {
+                        if (block[i][j] == col(MT.White)) continue;
+                        GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
                     }
+                    //                        for (int j = 0; j < 16*chunkSize; j++) {
+                    //                            //if (block[i][j] == col(MT.White)) continue;
+                    //                            GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
+                    //                        }
                 }
-            }.asWidget().pos(10, 10).right(10).bottom(10);
+            }).asWidget().pos(10, 10).right(10).bottom(10);
             panel.child(mapWidget);
             return panel;
         });
