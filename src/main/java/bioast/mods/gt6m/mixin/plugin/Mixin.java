@@ -1,12 +1,12 @@
 package bioast.mods.gt6m.mixin.plugin;
 
-import static bioast.mods.gt6m.mixin.plugin.Side.*;
-import static bioast.mods.gt6m.mixin.plugin.TargetedMod.*;
+import cpw.mods.fml.relauncher.FMLLaunchHandler;
 
 import java.util.Arrays;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.FMLLaunchHandler;
+import static bioast.mods.gt6m.mixin.plugin.Side.*;
+import static bioast.mods.gt6m.mixin.plugin.TargetedMod.GREGTECH;
 
 /**
  * IMPORTANT: Do not make any references to any mod from this file. This file is loaded quite early on and if
@@ -15,10 +15,9 @@ import cpw.mods.fml.relauncher.FMLLaunchHandler;
  */
 public enum Mixin {
 
-    // Gregtech
+    //Gregtech
     GT_TOOLSTATS_MIXIN("gregtech.GT_ToolStats_Mixin", BOTH, GREGTECH),
     GT_MULTIITEMTOOL_MIXIN("gregtech.GT_MultiItemTool_Mixin", BOTH, GREGTECH);
-
     public final String mixinClass;
     public final List<TargetedMod> targetedMods;
     private final Side side;
@@ -41,5 +40,5 @@ public enum Mixin {
 enum Side {
     BOTH,
     CLIENT,
-    SERVER;
+    SERVER
 }
