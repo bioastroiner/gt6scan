@@ -40,7 +40,7 @@ dependencies {
     api "cofh:CoFHLib:1.7.10R3.0.3:dev"
     api "appeng:appliedenergistics2:rv3-beta-6:dev"
     api fileTree("libs/Techguns.beta.1.2_alphatest4.1.jar")
-    api("com.github.GTNewHorizons:ModularUI2:2.0.6-1.7.10:dev")
+    shadowImplementation("com.github.GTNewHorizons:ModularUI2:2.0.6-1.7.10:dev")
 //    api "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
 //    api "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
 //    api "micdoodle8.mods:Galacticraft-Planets:1.7-3.0.12.504:Dev"
