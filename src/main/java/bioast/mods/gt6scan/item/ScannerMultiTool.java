@@ -1,9 +1,9 @@
-package bioast.mods.gt6m.scanner.item;
+package bioast.mods.gt6scan.item;
 
-import bioast.mods.gt6m.GT6M_Mod;
-import bioast.mods.gt6m.scanner.network.OreData;
-import bioast.mods.gt6m.scanner.network.OreDataSyncHandler;
-import bioast.mods.gt6m.scanner.utils.VALs;
+import bioast.mods.gt6scan.ScannerMod;
+import bioast.mods.gt6scan.network.OreData;
+import bioast.mods.gt6scan.network.OreDataSyncHandler;
+import bioast.mods.gt6scan.utils.VALs;
 import com.cleanroommc.modularui.api.IItemGuiHolder;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
@@ -39,8 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static bioast.mods.gt6m.scanner.utils.HLPs.col;
-import static bioast.mods.gt6m.scanner.utils.HLPs.prefixBlock;
+import static bioast.mods.gt6scan.utils.HLPs.col;
+import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
 
 public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
     List<OreData> scannedOres = new ArrayList<>();
@@ -54,7 +54,7 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
     int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
 
     public ScannerMultiTool() {
-        super(GT6M_Mod.MODID, VALs.SCANNER_MULTI_NAME);
+        super(ScannerMod.MODID, VALs.SCANNER_MULTI_NAME);
         addTool(0, "Scanner", "Open it", new ScannerToolStats(6), "toolScanner");
     }
 

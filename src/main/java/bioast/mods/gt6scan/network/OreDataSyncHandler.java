@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.scanner.network;
+package bioast.mods.gt6scan.network;
 
 import com.cleanroommc.modularui.api.sync.ValueSyncHandler;
 import net.minecraft.network.PacketBuffer;

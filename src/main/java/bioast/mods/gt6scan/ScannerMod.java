@@ -1,7 +1,7 @@
-package bioast.mods.gt6m;
+package bioast.mods.gt6scan;
 
-import bioast.mods.gt6m.proxy.CommonProxy;
-import bioast.mods.gt6m.scanner.item.ScannerMultiTool;
+import bioast.mods.gt6scan.item.ScannerMultiTool;
+import bioast.mods.gt6scan.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
@@ -11,10 +11,10 @@ import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static bioast.mods.gt6m.GT6M_Mod.*;
+import static bioast.mods.gt6scan.ScannerMod.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME, acceptedMinecraftVersions = "[1.7.10]")
-public class GT6M_Mod extends Abstract_Mod {
+public class ScannerMod extends Abstract_Mod {
 
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
@@ -23,17 +23,9 @@ public class GT6M_Mod extends Abstract_Mod {
 
     public static final Logger debug = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
-    public static GT6M_Mod instance;
-    @SidedProxy(clientSide = "bioast.mods.gt6m.proxy.ClientProxy", serverSide = "bioast.mods.gt6m.proxy.CommonProxy")
+    public static ScannerMod instance;
+    @SidedProxy(clientSide = "bioast.mods.gt6scan.proxy.ClientProxy", serverSide = "bioast.mods.gt6scan.proxy.CommonProxy")
     public static CommonProxy proxy;
-
-//    GT6M_Mod() {
-//        instance = this;
-//    }
-//
-//    public static GT6M_Mod getInstance() {
-//        return instance;
-//    }
 
     @Override
     public String getModID() {

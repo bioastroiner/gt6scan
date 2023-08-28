@@ -1,6 +1,6 @@
-package bioast.mods.gt6m.proxy;
+package bioast.mods.gt6scan.proxy;
 
-import bioast.mods.gt6m.Config;
+import bioast.mods.gt6scan.Config;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

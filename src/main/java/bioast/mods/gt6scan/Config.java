@@ -1,4 +1,4 @@
-package bioast.mods.gt6m;
+package bioast.mods.gt6scan;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
@@ -7,12 +7,7 @@ import java.io.File;
 
 public enum Config {
 
-    PENALTY_NO("QOL", "removePotionsPenaltyOnBreak", true,
-        "Removes that Nasty Effects whenever you break a GT tool so no more Slowness and Ftigue. Gt tools are Bad enough!"),
-    SCRAP_NO("QOL", "removeScrapOnBreak", true, "Do not return Scrap whenever a tool breaks"),
-    ELECTRIC_DURIBILITY_NO("QOL", "removeElectricToolsDuribility", true,
-        "Electric tools no longer use any duribility just Electricity."),
-    ENABLE_ANIME_GIRLS("Z???", "Enable Anime Girls", false, "They Might become real... take your meds");
+    ;
 
     public static Configuration configuration;
     final String CATEGORY;

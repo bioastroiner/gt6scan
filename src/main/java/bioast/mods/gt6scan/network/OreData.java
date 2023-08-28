@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.scanner.network;
+package bioast.mods.gt6scan.network;
 
 public class OreData {
     public final int x, y, z;

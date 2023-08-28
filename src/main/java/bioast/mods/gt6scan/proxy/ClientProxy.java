@@ -1,4 +1,4 @@
-package bioast.mods.gt6m.proxy;
+package bioast.mods.gt6scan.proxy;
 
 public class ClientProxy extends CommonProxy {
 
