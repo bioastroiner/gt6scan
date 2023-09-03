@@ -38,7 +38,6 @@ dependencies {
     compileOnly "appeng:appliedenergistics2:rv3-beta-6:dev"
     compileOnly "com.hbm:hbm:1.0.27:dev"
     api("com.github.GTNewHorizons:ModularUI2:2.0.6-1.7.10:dev")
-    //api("com.github.GTNewHorizons:ModularUI:1.1.16:dev")
     api "com.gregoriust.gregtech:gregtech_1.7.10:6.16.02:dev"
     api 'com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev'
     //compile(fileTree("libs/gregtech_1.7.10-6.16.02-dev.jar"))
