@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan.item;
+package bioast.mods.gt6scan.items;
 
 import bioast.mods.gt6scan.ScannerMod;
 import bioast.mods.gt6scan.network.OreData;
@@ -25,13 +25,11 @@ import gregapi.data.OP;
 import gregapi.item.multiitem.MultiItemTool;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.util.UT;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.chunk.Chunk;
 
 import java.util.ArrayList;
@@ -49,6 +47,7 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
     int oresFound = 0;
     int x_origin;
     int z_origin;
+    int update_counter = 0;
 
     Chunk[][] chunks = new Chunk[chunkSize][chunkSize];
     int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
@@ -58,9 +57,13 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
         addTool(0, "Scanner", "Open it", new ScannerToolStats(6), "toolScanner");
     }
 
+    private static IWidget wItem(OreDictMaterial mat) {
+        return new ItemDrawable().setItem(OP.oreRaw.dat(mat).getStack(1)).asWidget();
+    }
+
     @Override
     public void buildSyncHandler(GuiSyncHandler guiSyncHandler, EntityPlayer entityPlayer, ItemStack itemStack) {
-        guiSyncHandler.syncValue(0, new OreDataSyncHandler(() -> this.scannedOres, value -> this.scannedOres = value));
+        guiSyncHandler.syncValue(0,new OreDataSyncHandler(() -> this.scannedOres, value -> this.scannedOres = value));
         guiSyncHandler.syncValue(1, SyncHandlers.intNumber(() -> this.oresFound, val -> this.oresFound = val));
         guiSyncHandler.syncValue(2, SyncHandlers.intNumber(() -> this.chunkSize, val -> this.chunkSize = val));
         guiSyncHandler.syncValue(3, SyncHandlers.intNumber(() -> this.x_origin, val -> this.x_origin = val));
@@ -71,18 +74,20 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
     @Override
     public ItemStack onItemRightClick(ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
         List<String> chat = new ArrayList<>();
-        if (!aWorld.isRemote) serverLogic(aStack, (WorldServer) aWorld, aPlayer, chat);
-        else clientLogic(aStack, (WorldClient) aWorld, aPlayer);
+        List<String> chat_debug = new ArrayList<>();
+        // i try doing this logic in client but it just dose not work in client, everything here has to be calculated over server unfortunenyl, otherwise we would not get all the ores and blocks
+        if (!aWorld.isRemote) serverLogic(aStack, aWorld, aPlayer, chat_debug);
+        //else clientLogic(aPlayer);
+        chat.add("Booting Up the Device...");
         chat.add("Found " + oresFound + " Ores.");
+
         UT.Entities.sendchat(aPlayer, chat, false);
+        UT.Entities.sendchat(aPlayer, chat_debug, false);
         return super.onItemRightClick(aStack, aWorld, aPlayer);
     }
 
-    private static IWidget wItem(OreDictMaterial mat) {
-        return new ItemDrawable().setItem(OP.oreRaw.dat(mat).getStack(1)).asWidget();
-    }
-
-    private void serverLogic(ItemStack aStack, WorldServer aWorld, EntityPlayer aPlayer, List<String> chat) {
+    private void serverLogic(ItemStack aStack, World aWorld, EntityPlayer aPlayer, List<String> chat) {
+        //TODO server logic optimazation
         this.scannedOres.clear();
         this.oresFound = 0;
         chat.add("--Server--");
@@ -105,6 +110,37 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
             for (int j = 0; j < chunkSize; j++) {
                 Chunk currentChunk = chunks[i][j];
                 chat.add("Chunk (" + i + "," + j + "): " + "X: " + currentChunk.xPosition + ", Z: " + currentChunk.zPosition);
+//                for (int k = 0; k < 16; k++) {
+//                    for (int l = 0; l < 16; l++) {
+//                        for (int m = 0; m < currentChunk.getHeightValue(k,l); m++) {
+//                            Block tBlock = currentChunk.getBlock(k,m,l);
+//                            int meta = currentChunk.getBlockMetadata(k,m,l);
+//                            short matID;
+//                            if(tBlock instanceof BlockCrystalOres){
+//                                matID = BlockCrystalOres.ORE_MATERIALS[meta].mID;
+//                                this.scannedOres.add(new OreData(
+//                                    currentChunk.xPosition<<4 + k,
+//                                    m,
+//                                    currentChunk.zPosition<<4 + l,
+//                                    matID));
+//                            } else if(tBlock instanceof BlockRockOres){
+//                                matID = BlockRockOres.ORE_MATERIALS[meta].mID;
+//                                this.scannedOres.add(new OreData(
+//                                    currentChunk.xPosition<<4 + k,
+//                                    m,
+//                                    currentChunk.zPosition<<4 + l,
+//                                    matID));
+//                            } else if(tBlock instanceof BlockVanillaOresA){
+//                                matID = BlockVanillaOresA.ORE_MATERIALS[meta].mID;
+//                                this.scannedOres.add(new OreData(
+//                                    currentChunk.xPosition<<4 + k,
+//                                    m,
+//                                    currentChunk.zPosition<<4 + l,
+//                                    matID));
+//                            }
+//                        }
+//                    }
+//                }
                 Map tMap = currentChunk.chunkTileEntityMap;
                 Map<ChunkPosition, TileEntity> tTileMap;
                 if (tMap != null) {
@@ -129,9 +165,10 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                 }
             }
         }
+        GuiInfos.PLAYER_ITEM_MAIN_HAND.open(aPlayer);
     }
 
-    private void clientLogic(ItemStack aStack, WorldClient aWorld, EntityPlayer aPlayer) {
+    private void clientLogic() {
         /* CLIENT CODE */
         int borderColor = col(MT.Gray);
         int backgroundColor = col(MT.White);
@@ -179,15 +216,19 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                 }
             }
         }
-        GuiInfos.PLAYER_ITEM_MAIN_HAND.open(aPlayer);
     }
 
     @Override
     public ModularScreen createGuiScreen(EntityPlayer player, ItemStack itemStack) {
+        clientLogic();
         return ModularScreen.simple("map", guiContext -> {
             ModularPanel panel = ModularPanel.defaultPanel(guiContext);
             panel.flex().size(300, 166).align(Alignment.Center);
             IWidget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
+//                if(update_counter%10==0){
+//                    clientLogic();
+//                }
+//                update_counter++;
                 // TODO get rid of this for loop it would be a HUGE deal to optimization
                 for (int i = 0; i < 16 * chunkSize; i++) {
                     for (int j = 16 * chunkSize - 1; j > 0; j--) {
@@ -196,16 +237,7 @@ public class ScannerMultiTool extends MultiItemTool implements IItemGuiHolder {
                     }
                 }
             }).asWidget().pos(10, 10).right(10).bottom(10);
-//            IWidget itemWidget = new ItemDrawable().setItem(OP.ore.mat(MT.Pt,1)).asWidget();
-//            IWidget textWidget = new TextWidget(IKey.str(MT.Pt.mNameLocal));
-//            List<IWidget> widgetRow = new ArrayList<>();
-//            widgetRow.add(itemWidget);
-//            widgetRow.add(textWidget);
-//            List<List<IWidget>> widgetMatrix = new ArrayList<>();
-//            widgetMatrix.add(widgetRow);
             Grid listWidget = new Grid().scrollable().size(150, 150).pos(280 - 125, 0);
-//                .row(wItem(MT.Pt),new TextWidget(IKey.str(MT.Pt.mNameLocal + ": " + String.valueOf(100000))).color(UT.Code.getRGBaInt((MT.Pt.fRGBaSolid))))
-//                .row(wItem(MT.Azurite),new TextWidget(IKey.str(MT.Azurite + ": " + String.valueOf(256))));
             sortedOres.forEach((matID, amount) -> {
                 OreDictMaterial mat = OreDictMaterial.MATERIAL_ARRAY[matID];
                 IWidget itemWidget = wItem(mat);

@@ -1,6 +1,6 @@
 package bioast.mods.gt6scan;
 
-import bioast.mods.gt6scan.item.ScannerMultiTool;
+import bioast.mods.gt6scan.items.ScannerMultiTool;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -13,9 +13,10 @@ import org.apache.logging.log4j.Logger;
 
 import static bioast.mods.gt6scan.ScannerMod.*;
 
-@Mod(modid = MODID, version = VERSION, name = MODNAME, acceptedMinecraftVersions = "[1.7.10]")
+@Mod(modid = MODID, version = VERSION, name = MODNAME, acceptedMinecraftVersions = "[1.7.10]",dependencies = DEPENDENCIES)
 public class ScannerMod extends Abstract_Mod {
-
+    public static final String DEPENDENCIES = "required-after:modularui@[2.0.6-1.7.10,); "
+        + "required-after:gregtech@[6.0.0,)";
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
     public static final String VERSION = "GRADLETOKEN_VERSION";

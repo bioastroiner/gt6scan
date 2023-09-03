@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan.item;
+package bioast.mods.gt6scan.items;
 
 import gregapi.item.multiitem.MultiItemTool;
 import gregapi.item.multiitem.tools.ToolStats;
