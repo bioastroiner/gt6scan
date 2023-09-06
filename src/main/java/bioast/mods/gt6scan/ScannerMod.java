@@ -1,13 +1,17 @@
 package bioast.mods.gt6scan;
 
-import bioast.mods.gt6scan.items.ScannerMultiTool;
+import bioast.mods.gt6scan.item.ScannerBehavior;
+import bioast.mods.gt6scan.item.ScannerMultiTool;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
+import gregapi.config.Config;
+import gregapi.data.CS;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,6 +29,7 @@ public class ScannerMod extends Abstract_Mod {
     public static final Logger debug = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
     public static ScannerMod instance;
+    public static Config config;
     @SidedProxy(clientSide = "bioast.mods.gt6scan.proxy.ClientProxy", serverSide = "bioast.mods.gt6scan.proxy.CommonProxy")
     public static CommonProxy proxy;
 
@@ -88,6 +93,7 @@ public class ScannerMod extends Abstract_Mod {
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
         instance = this;
         proxy.preInit(aEvent);
+        config = new Config("Scanner.cfg");
         new ScannerMultiTool();
     }
 
@@ -95,6 +101,10 @@ public class ScannerMod extends Abstract_Mod {
     public void onModInit2(FMLInitializationEvent aEvent) {
         MinecraftForge.EVENT_BUS.register(this);
         proxy.init(aEvent);
+
+        if(config.get("core","useCheatTool",false)){
+            CS.ItemsGT.TOOLS.addItemBehavior(9001,new ScannerBehavior(9));
+        }
     }
 
     @Override

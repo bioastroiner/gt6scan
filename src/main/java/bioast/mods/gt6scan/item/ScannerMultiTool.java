@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan.items;
+package bioast.mods.gt6scan.item;
 
 import bioast.mods.gt6scan.ScannerMod;
 import gregapi.data.TD;
