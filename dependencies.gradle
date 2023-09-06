@@ -33,7 +33,6 @@
  *
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
-// always use api so it dosen't set hard dependecie for versions
 dependencies {
     compileOnly "appeng:appliedenergistics2:rv3-beta-6:dev"
     compileOnly "com.hbm:hbm:1.0.27:dev"

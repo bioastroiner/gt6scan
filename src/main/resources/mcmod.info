@@ -6,16 +6,13 @@
 		"description": "Adds an Scanner for GT6! pretty convenient",
 		"version": "${modVersion}",
 		"mcversion": "${minecraftVersion}",
-		"url": "https://github.com/bioastroiner/gt6mixins",
+		"url": "https://github.com/bioastroiner/gt6scan",
 		"updateUrl": "",
 		"authorList": ["BioAstroiner"],
-		"credits": "",
+		"credits": "Credit to ModularUI and Datrov",
 		"logoFile": "",
 		"screenshots": [],
 		"parent": "",
-		"requiredMods": [],
-		"dependencies": [],
-		"dependants": [],
 		"useDependencyInformation": true
 	}]
 }
