@@ -1,6 +1,5 @@
 package bioast.mods.gt6scan.item;
 
-import bioast.mods.gt6scan.ScannerMod;
 import bioast.mods.gt6scan.network.OreData;
 import bioast.mods.gt6scan.network.OreDataSyncHandler;
 import com.cleanroommc.modularui.api.IItemGuiHolder;
@@ -15,6 +14,7 @@ import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.sync.GuiSyncHandler;
 import com.cleanroommc.modularui.sync.SyncHandlers;
 import com.cleanroommc.modularui.utils.Alignment;
+import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import gregapi.block.prefixblock.PrefixBlock;
@@ -35,6 +35,7 @@ import gregtech.blocks.stone.BlockVanillaOresA;
 import gregtech.tileentity.misc.MultiTileEntityFluidSpring;
 import gregtech.tileentity.placeables.MultiTileEntityRock;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -42,7 +43,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
-import scala.reflect.internal.pickling.UnPickler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +52,7 @@ import java.util.Map;
 import static bioast.mods.gt6scan.ScannerMod.config;
 import static bioast.mods.gt6scan.utils.HLPs.col;
 import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
+import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
 
 public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implements IItemGuiHolder {
     //Mode mode = Mode.LARGE;
@@ -69,9 +70,9 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
         chunkSize = sizeIn;
     }
 
-    public ScannerBehavior(){
-        int def_size = config.get("core","sizeInChunksOddNumber",9);
-        if(def_size%2==0) def_size++;
+    public ScannerBehavior() {
+        int def_size = config.get("core", "sizeInChunksOddNumber", 9);
+        if (def_size % 2 == 0) def_size++;
         new ScannerBehavior(def_size);
     }
 
@@ -167,50 +168,6 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
         //guiSyncHandler.syncValue(5, SyncHandlers.enumValue(Mode.class, () -> this.mode, val -> this.mode = val));
     }
 
-    @Override
-    public ModularScreen createGuiScreen(EntityPlayer player, ItemStack itemStack) {
-        ScanMode mode = getMode(itemStack);
-        clientLogic();
-        return ModularScreen.simple("map", guiContext -> {
-            ModularPanel panel = ModularPanel.defaultPanel(guiContext);
-            panel.flex().align(Alignment.Center).size(300, 166);
-            if(config.get("client","fullScreen",false)) panel.flex().full();
-            IWidget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
-                // TODO get rid of this for loop it would be a HUGE deal to optimization
-                for (int i = 0; i < 16 * chunkSize; i++) {
-                    for (int j = 16 * chunkSize - 1; j >= 0; j--) {
-                        if (block[i][j] == col(MT.White)) continue;
-                        GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
-                    }
-                }
-                String corX = "X -> " + (guiContext.getAbsMouseX() - x + x_origin - 9);
-                String corZ = "Z -> " + (guiContext.getAbsMouseY() - y + z_origin - 9);
-                String corN = " ";
-                int text_color = col(MT.White);
-                try {
-                    short mat = blockMat[(guiContext.getAbsMouseX() - x - 10)][(guiContext.getAbsMouseY() - y - 10)];
-                    if (mat != 0) {
-                        corN = OreDictMaterial.MATERIAL_ARRAY[mat].mNameLocal;
-                        text_color = col(OreDictMaterial.MATERIAL_ARRAY[mat]);
-                    } else corN = "NaN";
-                } catch (Exception e) {
-                    corN = "NaN";
-                }
-                String cor = corX + " , " + corZ + " , " + corN;
-                GuiDraw.drawText(cor, 0, -10, 1f, text_color, true);
-            }).asWidget().pos(10, 10).right(10).bottom(10);
-            Grid listWidget = new Grid().scrollable().size(150, 150).pos(280 - 125, 0);
-            sortedOres.forEach((matID, amount) -> {
-                OreDictMaterial mat = OreDictMaterial.MATERIAL_ARRAY[matID];
-                IWidget itemWidget = wItem(mat, mode);
-                IWidget nameWidget = new TextWidget(IKey.str(mat.mNameLocal + ": " + amount)).color(UT.Code.getRGBaInt((mat.fRGBaSolid))).shadow(true);
-                listWidget.row(itemWidget, nameWidget).nextRow();
-            });
-            panel.child(mapWidget);
-            panel.child(listWidget);
-            return panel;
-        });
-    }
 
     private void serverLogic(ItemStack aStack, World aWorld, EntityPlayer aPlayer, List<String> chat) {
         //TODO server logic optimazation
@@ -320,8 +277,8 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
     }
 
     private void clientLogic() {
-        ScannerMod.debug.info(x_origin);
-        ScannerMod.debug.info(z_origin);
+        //ScannerMod.debug.info(x_origin);
+        //ScannerMod.debug.info(z_origin);
 
         /* CLIENT CODE */
         blockMat = new short[chunkSize * 16][chunkSize * 16];
@@ -371,5 +328,72 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
                 }
             }
         }
+    }
+
+    @Override
+    public ModularScreen createGuiScreen(EntityPlayer player, ItemStack itemStack) {
+        ScanMode mode = getMode(itemStack);
+        clientLogic();
+        return ModularScreen.simple("map", guiContext -> {
+            ModularPanel panel = ModularPanel.defaultPanel(guiContext);
+            panel.flex().align(Alignment.Center).size(300, 166);
+            if (config.get("client", "fullScreen", false))
+                panel.flex().full();
+            IWidget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
+                // TODO get rid of this for loop it would be a HUGE deal to optimization
+                // This block alone gets called every FRAME to draw the gui this for loop
+                for (int i = 0; i < 16 * chunkSize; i++) {
+                    for (int j = 16 * chunkSize - 1; j >= 0; j--) {
+                        if (block[i][j] == col(MT.White)) continue;
+//                        GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
+                        //
+//                        GL11.glDisable(GL11.GL_TEXTURE_2D);
+//                        GL11.glEnable(GL11.GL_BLEND);
+//                        GL11.glDisable(GL11.GL_ALPHA_TEST);
+//                        OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+//                        GL11.glShadeModel(GL11.GL_SMOOTH);
+                        int color = block[i][j];
+                        Tessellator.instance.startDrawingQuads();
+//                        Tessellator.instance.addVertex(i+0.5,j+0.5,0);
+//                        Tessellator.instance.setColorOpaque_I(color);
+                        bufferbuilder.pos(i, j, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+                        bufferbuilder.pos(i, j + 1, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+                        bufferbuilder.pos(i + 1, j + 1, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+                        bufferbuilder.pos(i + 1, j, 0.0f).color(Color.getRed(color), Color.getGreen(color), Color.getBlue(color), Color.getAlpha(color)).endVertex();
+                        Tessellator.instance.draw();
+//                        GL11.glShadeModel(GL11.GL_FLAT);
+//                        GL11.glDisable(GL11.GL_BLEND);
+//                        GL11.glEnable(GL11.GL_ALPHA_TEST);
+//                        GL11.glEnable(GL11.GL_TEXTURE_2D);
+                        //TODO use verteces to draw grids instead of point to point!
+                    }
+                }
+                String corX = "X -> " + (guiContext.getAbsMouseX() - panel.getArea().x - x + x_origin - 9);
+                String corZ = "Z -> " + (guiContext.getAbsMouseY() - panel.getArea().y - y + z_origin - 9);
+                String corN = " ";
+                int text_color = col(MT.White);
+                try {
+                    short mat = blockMat[(guiContext.getAbsMouseX() - panel.getArea().x - x - 10)][(guiContext.getAbsMouseY() - panel.getArea().y - y - 10)];
+                    if (mat != 0) {
+                        corN = OreDictMaterial.MATERIAL_ARRAY[mat].mNameLocal;
+                        text_color = col(OreDictMaterial.MATERIAL_ARRAY[mat]);
+                    } else corN = "NaN";
+                } catch (Exception e) {
+                    corN = "NaN";
+                }
+                String cor = corX + " , " + corZ + " , " + corN + ". Dim: " + player.worldObj.provider.getDimensionName();
+                GuiDraw.drawText(cor, 0, -10, 1f, text_color, true);
+            }).asWidget().pos(10, 10).right(10).bottom(10);
+            Grid listWidget = new Grid().scrollable().size(150, 150).pos(280 - 125, 0);
+            sortedOres.forEach((matID, amount) -> {
+                OreDictMaterial mat = OreDictMaterial.MATERIAL_ARRAY[matID];
+                IWidget itemWidget = wItem(mat, mode);
+                IWidget nameWidget = new TextWidget(IKey.str(mat.mNameLocal + ": " + amount)).color(UT.Code.getRGBaInt((mat.fRGBaSolid))).shadow(true);
+                listWidget.row(itemWidget, nameWidget).nextRow();
+            });
+            panel.child(mapWidget);
+            panel.child(listWidget);
+            return panel;
+        });
     }
 }
