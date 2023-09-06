@@ -2,6 +2,8 @@
 
 
 A GUI based scanner mod similar to https://github.com/GTNewHorizons/DetravScannerMod
+To use this mod you have to install [ModularUI2](https://github.com/GTNewHorizons/ModularUI2/releases/latest) from gregtech new horizon this won't work with the other modular ui it has to be anything after version 2.0.6!
+
 
 ![image](src/main/resources/assets/gt6scan/textures/items/scannertool/1/1.png)
 
