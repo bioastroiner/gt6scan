@@ -3,6 +3,7 @@ package bioast.mods.gt6scan.items;
 import bioast.mods.gt6scan.ScannerMod;
 import bioast.mods.gt6scan.network.OreData;
 import bioast.mods.gt6scan.network.OreDataSyncHandler;
+import codechicken.nei.util.NBTHelper;
 import com.cleanroommc.modularui.api.IItemGuiHolder;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
@@ -17,28 +18,27 @@ import com.cleanroommc.modularui.sync.SyncHandlers;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Grid;
-import gregapi.block.metatype.BlockStones;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
 import gregapi.data.CS;
 import gregapi.data.MT;
 import gregapi.data.OP;
+import gregapi.data.TD;
 import gregapi.item.multiitem.MultiItem;
 import gregapi.item.multiitem.behaviors.IBehavior;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.OM;
 import gregapi.util.UT;
-import gregtech.blocks.BlockDiggable;
 import gregtech.blocks.stone.BlockCrystalOres;
 import gregtech.blocks.stone.BlockRockOres;
-import gregtech.blocks.stone.BlockStonesGT;
 import gregtech.blocks.stone.BlockVanillaOresA;
 import gregtech.tileentity.misc.MultiTileEntityFluidSpring;
 import gregtech.tileentity.placeables.MultiTileEntityRock;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
@@ -46,11 +46,10 @@ import net.minecraft.world.chunk.Chunk;
 
 import java.util.*;
 
-import static bioast.mods.gt6scan.utils.HLPs.col;
-import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
+import static bioast.mods.gt6scan.utils.HLPs.*;
 
 public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implements IItemGuiHolder {
-	Mode mode = Mode.LARGE;
+	//Mode mode = Mode.LARGE;
 	List<OreData> scannedOres = new ArrayList<>();
 	Map<Short, Integer> sortedOres = new HashMap<>();
 	int chunkSize = 9;
@@ -58,9 +57,8 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	int x_origin;
 	int z_origin;
 
-	/* CLIENT ONLY*/
-	int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
-	short[][] blockMat = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
+	/* CLIENT ONLY*/ int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
+	/* CLIENT ONLY*/ short[][] blockMat = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
 
 	public ScannerBehavior(int sizeIn) {
 		chunkSize = sizeIn;
@@ -82,7 +80,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		return chunks;
 	}
 
-	private IWidget wItem(OreDictMaterial mat) {
+	private IWidget wItem(OreDictMaterial mat,Mode mode) {
 		OreDictPrefix prefix = OP.oreRaw;
 		if (mode == Mode.SMALL) prefix = OP.crushed;
 		if (mode == Mode.FLUID) prefix = OP.bucket;
@@ -90,28 +88,50 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		return new ItemDrawable().setItem(prefix.dat(mat).getStack(1)).asWidget();
 	}
 
+	public ItemStack changeMode(EntityPlayer aPlayer,ItemStack aStack,Mode currentMode){
+		//Switch mode
+		int nextMode = currentMode.ordinal() + 1;
+		if (nextMode >= Mode.values().length) nextMode = 0;
+		try {
+			currentMode = Mode.values()[nextMode];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			currentMode = Mode.LARGE;
+		}
+        UT.NBT.set(aStack,UT.NBT.makeInt("mode",nextMode));
+		UT.Entities.sendchat(aPlayer, "Mode: " + currentMode.name());
+		return aStack;
+	}
+
+	public Mode getMode(ItemStack aStack){
+		NBTTagCompound tag = UT.NBT.getOrCreate(aStack);
+		if(!tag.hasKey("mode")) {
+            UT.NBT.makeInt(tag,0);
+            UT.NBT.set(aStack,tag);
+			return Mode.LARGE;
+		} else {
+            return Mode.values()[tag.getInteger("mode")];
+        }
+	}
+
 	@Override
 	public ItemStack onItemRightClick(MultiItem aItem, ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
 		UT.Sounds.play(CS.SFX.IC_SCANNER, 20, 1.0F, aPlayer);
+		if (!UT.Entities.isCreative(aPlayer)) {
+			if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
+		}
 		List<String> chat = new ArrayList<>();
 		List<String> chat_debug = new ArrayList<>();
 		if (aStack != null && (aPlayer == null || aPlayer.isSneaking()) && !aWorld.isRemote) {
-			//Switch mode
-			String from = "from " + mode.name();
-			int nextMode = mode.ordinal() + 1;
-			if (nextMode >= Mode.values().length) nextMode = 0;
-			try {
-				mode = Mode.values()[nextMode];
-			} catch (ArrayIndexOutOfBoundsException e) {
-				mode = Mode.LARGE;
-			}
-			chat.add("Set to " + mode.name() + " mode. " + from);
-			UT.Entities.sendchat(aPlayer, chat, false);
-			return aStack;
+			changeMode(aPlayer,aStack,getMode(aStack));
+            return aStack;
 		}
-		if (!aWorld.isRemote) serverLogic(aStack, aWorld, aPlayer, chat_debug);
-		chat.add("Booting Up the Device In " + mode.name() + " mode...");
-		chat.add("Found " + oresFound + " Ores.");
+		if (!aWorld.isRemote) {
+			serverLogic(aStack, aWorld, aPlayer, chat_debug);
+			if (!UT.Entities.isCreative(aPlayer))
+				aItem.useEnergy(TD.Energy.LU, aStack, sortedOres.keySet().size() * CS.V[6] * Math.min(oresFound/100,30), aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
+		}
+		//chat.add("Booting Up the Device In " + mode.name() + " mode...");
+		//chat.add("Found " + oresFound + " Ores.");
 		UT.Entities.sendchat(aPlayer, chat, false);
 		//UT.Entities.sendchat(aPlayer, chat_debug, false);
 		return aStack;
@@ -121,8 +141,8 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	public List<String> getAdditionalToolTips(MultiItem aItem, List<String> aList, ItemStack aStack) {
 		aList.add("Shift Right Click to Change Mode.");
 		aList.add("Right Click to Open GUI.");
-		aList.add(mode.name() + " Mode.");
-		aList.add(oresFound + " many found.");
+		aList.add(getMode(aStack) + " Mode.");
+		//aList.add(oresFound + " many found.");
 		return aList;
 	}
 
@@ -133,11 +153,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		guiSyncHandler.syncValue(2, SyncHandlers.intNumber(() -> this.chunkSize, val -> this.chunkSize = val));
 		guiSyncHandler.syncValue(3, SyncHandlers.intNumber(() -> this.x_origin, val -> this.x_origin = val));
 		guiSyncHandler.syncValue(4, SyncHandlers.intNumber(() -> this.z_origin, val -> this.z_origin = val));
-		guiSyncHandler.syncValue(5, SyncHandlers.enumValue(Mode.class, () -> this.mode, val -> this.mode = val));
+		//guiSyncHandler.syncValue(5, SyncHandlers.enumValue(Mode.class, () -> this.mode, val -> this.mode = val));
 	}
 
 	@Override
 	public ModularScreen createGuiScreen(EntityPlayer player, ItemStack itemStack) {
+        Mode mode = getMode(itemStack);
 		clientLogic();
 		return ModularScreen.simple("map", guiContext -> {
 			ModularPanel panel = ModularPanel.defaultPanel(guiContext);
@@ -150,27 +171,26 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 						GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
 					}
 				}
-				// TODO FIX center shows corner FIX ,8 or 7 as offset?
-				String corX="X -> " + (guiContext.getAbsMouseX()-x+x_origin-9);
-				String corZ="Z -> " + (guiContext.getAbsMouseY()-y+z_origin-9);
-				String corN=" ";
-				int text_color = col(MT.Red);
-				try{
-					short mat = blockMat[(guiContext.getAbsMouseX()-x-10)][(guiContext.getAbsMouseY()-y-10)];
-					if(mat!=0){
-						corN=OreDictMaterial.MATERIAL_ARRAY[mat].mNameLocal;
+				String corX = "X -> " + (guiContext.getAbsMouseX() - x + x_origin - 9);
+				String corZ = "Z -> " + (guiContext.getAbsMouseY() - y + z_origin - 9);
+				String corN = " ";
+				int text_color = col(MT.White);
+				try {
+					short mat = blockMat[(guiContext.getAbsMouseX() - x - 10)][(guiContext.getAbsMouseY() - y - 10)];
+					if (mat != 0) {
+						corN = OreDictMaterial.MATERIAL_ARRAY[mat].mNameLocal;
 						text_color = col(OreDictMaterial.MATERIAL_ARRAY[mat]);
 					} else corN = "NaN";
-				} catch (Exception e){
-					corN="NaN";
+				} catch (Exception e) {
+					corN = "NaN";
 				}
 				String cor = corX + " , " + corZ + " , " + corN;
-				GuiDraw.drawText(cor,0,-10,1f,text_color,true);
+				GuiDraw.drawText(cor, 0, -10, 1f, text_color, true);
 			}).asWidget().pos(10, 10).right(10).bottom(10);
 			Grid listWidget = new Grid().scrollable().size(150, 150).pos(280 - 125, 0);
 			sortedOres.forEach((matID, amount) -> {
 				OreDictMaterial mat = OreDictMaterial.MATERIAL_ARRAY[matID];
-				IWidget itemWidget = wItem(mat);
+				IWidget itemWidget = wItem(mat,mode);
 				IWidget nameWidget = new TextWidget(IKey.str(mat.mNameLocal + ": " + amount)).color(UT.Code.getRGBaInt((mat.fRGBaSolid))).shadow(true);
 				listWidget.row(itemWidget, nameWidget).nextRow();
 			});
@@ -182,6 +202,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 
 	private void serverLogic(ItemStack aStack, World aWorld, EntityPlayer aPlayer, List<String> chat) {
 		//TODO server logic optimazation
+        Mode mode = getMode(aStack);
 		this.scannedOres.clear();
 		this.oresFound = 0;
 		Chunk[][] chunks = getChunksAroundPlayer(aWorld, aPlayer, chunkSize);
@@ -189,36 +210,36 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		z_origin = (chunks[0][0].zPosition << 4);
 		for (int i = 0; i < chunkSize; i++) {
 			for (int j = 0; j < chunkSize; j++) {
-				if (mode.isTE()) findTileEntityBlocks(chunks[i][j]);
+				if (mode.isTE()) findTileEntityBlocks(chunks[i][j],mode);
 				else {
 					for (int k = 0; k < 16; k++) {
 						for (int l = 0; l < 16; l++) {
 							//TODO check packet size
-							int highest_y = chunks[i][j].getHeightValue(k,l);
-							for (int m = highest_y; m >=0 ; m--) {
-								Block block1 = chunks[i][j].getBlock(k,m,l);
+							int highest_y = chunks[i][j].getHeightValue(k, l);
+							for (int m = highest_y; m >= 0; m--) {
+								Block block1 = chunks[i][j].getBlock(k, m, l);
 								short matID;
-								int x = chunks[i][j].xPosition*16 + k;
-								int z = chunks[i][j].zPosition*16 + l;
+								int x = chunks[i][j].xPosition * 16 + k;
+								int z = chunks[i][j].zPosition * 16 + l;
 								int y = m;
-								if(mode == Mode.DENSE){
-									if(block1 instanceof BlockRockOres){
-										matID = BlockRockOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k,m,l)].mID;
+								if (mode == Mode.DENSE_AND_NORMAL) {
+									if (block1 instanceof BlockRockOres) {
+										matID = BlockRockOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k, m, l)].mID;
 										oresFound++;
-										scannedOres.add(new OreData(x,y,z,matID));
+										scannedOres.add(new OreData(x, y, z, matID));
 										//TODO
 										// this block can easially cause server to crash because of 2097050 bytes Packet Limit
 										// so we skip the lower y levels for dense ores
 										break;
 									} else if (block1 instanceof BlockCrystalOres) {
-										matID = BlockCrystalOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k,m,l)].mID;
+										matID = BlockCrystalOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k, m, l)].mID;
 										oresFound++;
-										scannedOres.add(new OreData(x,y,z,matID));
+										scannedOres.add(new OreData(x, y, z, matID));
 										//break;
 									} else if (block1 instanceof BlockVanillaOresA) {
-										matID = BlockVanillaOresA.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k,m,l)].mID;
+										matID = BlockVanillaOresA.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k, m, l)].mID;
 										oresFound++;
-										scannedOres.add(new OreData(x,y,z,matID));
+										scannedOres.add(new OreData(x, y, z, matID));
 										//break;
 									}
 //									else if(block1 instanceof BlockDiggable){
@@ -240,7 +261,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		gui.open(aPlayer);
 	}
 
-	private void findTileEntityBlocks(Chunk chunk) {
+	private void findTileEntityBlocks(Chunk chunk,Mode mode) {
 		var tMap = chunk.chunkTileEntityMap;
 		Map<ChunkPosition, TileEntity> tTileMap;
 		if (tMap != null) {
@@ -291,7 +312,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		ScannerMod.debug.info(z_origin);
 
 		/* CLIENT CODE */
-		blockMat = new short[chunkSize*16][chunkSize*16];
+		blockMat = new short[chunkSize * 16][chunkSize * 16];
 		int borderColor = col(MT.Gray);
 		int backgroundColor = col(MT.White);
 		int oreColor = 0;
@@ -341,7 +362,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	}
 
 	enum Mode {
-		LARGE(gregapi.data.OP.ore), SMALL(gregapi.data.OP.oreSmall), DENSE(gregapi.data.OP.oreDense), BEDROCK(gregapi.data.OP.oreBedrock), FLUID(gregapi.data.OP.bucket), ROCK(gregapi.data.OP.rockGt);
+		LARGE(gregapi.data.OP.ore), SMALL(gregapi.data.OP.oreSmall), DENSE_AND_NORMAL(gregapi.data.OP.oreDense), BEDROCK(gregapi.data.OP.oreBedrock), FLUID(gregapi.data.OP.bucket), ROCK(gregapi.data.OP.rockGt);
 		public final OreDictPrefix OP;
 
 		Mode(OreDictPrefix op) {
@@ -356,7 +377,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 				case SMALL -> {
 					return true;
 				}
-				case DENSE -> {
+				case DENSE_AND_NORMAL -> {
 					return false;
 				}
 				case BEDROCK -> {
