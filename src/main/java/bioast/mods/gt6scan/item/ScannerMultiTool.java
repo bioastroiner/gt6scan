@@ -15,7 +15,7 @@ public class ScannerMultiTool extends MultiItemRandom {
 
     @Override
     public void addItems() {
-        addItem(1,"Advanced Scanner (LuV)","Scan For Ores, Fluids and Rocks",new ScannerBehavior(9),
+        addItem(1,"Advanced Scanner (LuV)","Scan For Ores, Fluids and Rocks",new ScannerBehavior(),
             EnergyStat.makeTool(TD.Energy.LU,V[6]*8000,V[6],64, ST.make(this,1,1)));
     }
 }

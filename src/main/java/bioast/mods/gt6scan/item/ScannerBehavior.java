@@ -42,12 +42,14 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import scala.reflect.internal.pickling.UnPickler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static bioast.mods.gt6scan.ScannerMod.config;
 import static bioast.mods.gt6scan.utils.HLPs.col;
 import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
 
@@ -65,6 +67,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 
     public ScannerBehavior(int sizeIn) {
         chunkSize = sizeIn;
+    }
+
+    public ScannerBehavior(){
+        int def_size = config.get("core","sizeInChunksOddNumber",9);
+        if(def_size%2==0) def_size++;
+        new ScannerBehavior(def_size);
     }
 
     private static Chunk[][] getChunksAroundPlayer(World aWorld, EntityPlayer aPlayer, int chunkSize) {
@@ -166,7 +174,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
         return ModularScreen.simple("map", guiContext -> {
             ModularPanel panel = ModularPanel.defaultPanel(guiContext);
             panel.flex().align(Alignment.Center).size(300, 166);
-            if(ScannerMod.config.get("client","fullScreen",false)) panel.flex().full();
+            if(config.get("client","fullScreen",false)) panel.flex().full();
             IWidget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
                 // TODO get rid of this for loop it would be a HUGE deal to optimization
                 for (int i = 0; i < 16 * chunkSize; i++) {

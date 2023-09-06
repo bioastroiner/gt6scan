@@ -103,7 +103,7 @@ public class ScannerMod extends Abstract_Mod {
         proxy.init(aEvent);
 
         if(config.get("core","useCheatTool",false)){
-            CS.ItemsGT.TOOLS.addItemBehavior(9001,new ScannerBehavior(9));
+            CS.ItemsGT.TOOLS.addItemBehavior(9001,new ScannerBehavior());
         }
     }
 
