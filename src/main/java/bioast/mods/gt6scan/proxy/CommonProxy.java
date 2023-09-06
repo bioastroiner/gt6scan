@@ -12,7 +12,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 public class CommonProxy extends Abstract_Proxy {
 
     CommonProxy() {
-        MinecraftForge.EVENT_BUS.register(this);
+        //MinecraftForge.EVENT_BUS.register(this);
 
     }
 
@@ -33,9 +33,9 @@ public class CommonProxy extends Abstract_Proxy {
     public void serverStarting(FMLServerStartingEvent event) {
     }
 
-    @SubscribeEvent
-    public void onPlayerUseEvent(PlayerInteractEvent aEvent) {
-        if (aEvent.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
-        }
-    }
+//    @SubscribeEvent
+//    public void onPlayerUseEvent(PlayerInteractEvent aEvent) {
+//        if (aEvent.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
+//        }
+//    }
 }
