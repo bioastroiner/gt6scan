@@ -93,7 +93,7 @@ public class ScannerMod extends Abstract_Mod {
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
         instance = this;
         proxy.preInit(aEvent);
-        config = new Config("Scanner.cfg");
+        config = new Config(CS.DirectoriesGT.CONFIG_GT,"scanner.cfg");
         new ScannerMultiTool();
     }
 
