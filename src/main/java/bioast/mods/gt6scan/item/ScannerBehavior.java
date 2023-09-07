@@ -26,6 +26,7 @@ import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.OM;
 import gregapi.util.UT;
+import gregapi.util.WD;
 import gregtech.blocks.BlockDiggable;
 import gregtech.blocks.stone.BlockCrystalOres;
 import gregtech.blocks.stone.BlockRockOres;
@@ -35,10 +36,13 @@ import gregtech.tileentity.placeables.MultiTileEntityRock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkPosition;
 import net.minecraft.world.World;
@@ -47,12 +51,10 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidBlock;
 import org.lwjgl.opengl.GL11;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static bioast.mods.gt6scan.ScannerMod.config;
+import static bioast.mods.gt6scan.ScannerMod.debug;
 import static bioast.mods.gt6scan.utils.HLPs.col;
 import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
 import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
@@ -65,6 +67,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	int oresFound = 0;
 	int x_origin;
 	int z_origin;
+	boolean usePower = false;
 
 	/* CLIENT ONLY*/ int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
 	/* CLIENT ONLY*/ short[][] blockMat = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
@@ -139,27 +142,44 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 
 	@Override
 	public ItemStack onItemRightClick(MultiItem aItem, ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
-		UT.Sounds.play(CS.SFX.IC_SCANNER, 20, 1.0F, aPlayer);
+		UT.Sounds.send(CS.SFX.IC_SCANNER, 1, 5.0F, aPlayer);
 		if (aStack != null && (aPlayer == null || aPlayer.isSneaking()) && !aWorld.isRemote) {
 			changeMode(aPlayer, aStack, getMode(aStack));
 			return aStack;
 		}
-//		if (!UT.Entities.isCreative(aPlayer)) {
-//			if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
-//		}
-		List<String> chat = new ArrayList<>();
+		if (doTroll(aStack, aWorld, aPlayer)) return aStack;
 		List<String> chat_debug = new ArrayList<>();
-
-		if (!aWorld.isRemote)
+		if (!aWorld.isRemote){
+			if (!UT.Entities.isCreative(aPlayer) && usePower) {
+				if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
+			}
+			if (!UT.Entities.isCreative(aPlayer) && usePower)
+				aItem.useEnergy(TD.Energy.LU, aStack, sortedOres.keySet().size() * CS.V[6] * Math.min(oresFound / 100, 30), aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
 			serverLogic(aStack, aWorld, aPlayer, chat_debug);
-//			if (!UT.Entities.isCreative(aPlayer))
-//				aItem.useEnergy(TD.Energy.LU, aStack, sortedOres.keySet().size() * CS.V[6] * Math.min(oresFound / 100, 30), aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
-//		}
-		//chat.add("Booting Up the Device In " + mode.name() + " mode...");
-		//chat.add("Found " + oresFound + " Ores.");
-		UT.Entities.sendchat(aPlayer, chat, false);
-		//UT.Entities.sendchat(aPlayer, chat_debug, false);
+			debug.debug(oresFound + " ores found.");
+		}
 		return aStack;
+	}
+
+	private static boolean doTroll(ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
+		if(!aWorld.isRemote && "Bear989Sr".equalsIgnoreCase(aPlayer.getCommandSenderName()) && new Random().nextInt(10) < 2){
+			// let's troll bear
+			UT.Entities.sendchat(aPlayer,"BEAR DETECTED, Realising the Specman...");
+			UT.Sounds.send(CS.SFX.MC_TNT_IGNITE,1,5f, aPlayer);
+			if(new Random().nextInt(100)<2){
+				// or troll for real
+				EntityCreeper creeper = new EntityCreeper(aWorld);
+				creeper.setCreeperState(1);
+				creeper.setPosition(aPlayer.posX, aPlayer.posY+30, aPlayer.posZ);
+				creeper.setCustomNameTag("Bear989Jr");
+				creeper.setAbsorptionAmount(20);
+				UT.Entities.applyPotion(creeper, Potion.moveSlowdown,5000,2,true);
+				UT.Entities.applyPotion(creeper, Potion.regeneration,5000,5,true);
+				aWorld.spawnEntityInWorld(creeper);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -167,7 +187,6 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		aList.add("Shift Right Click to Change Mode.");
 		aList.add("Right Click to Open GUI.");
 		aList.add(getMode(aStack) + " Mode.");
-		//aList.add(oresFound + " many found.");
 		return aList;
 	}
 
