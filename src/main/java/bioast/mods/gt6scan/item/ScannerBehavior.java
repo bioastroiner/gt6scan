@@ -121,7 +121,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		} catch (ArrayIndexOutOfBoundsException e) {
 			currentMode = ScanMode.LARGE;
 		}
-		UT.NBT.set(aStack, UT.NBT.makeInt("mode", nextMode));
+		UT.NBT.makeInt(UT.NBT.getNBT(aStack),"mode", currentMode.ordinal());
 		UT.Entities.sendchat(aPlayer, "Mode: " + currentMode.name());
 		return aStack;
 	}
