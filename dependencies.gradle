@@ -45,10 +45,11 @@ dependencies {
     //compileOnly "cofh:CoFHLib:1.7.10R3.0.3:dev"
     //compileOnly "maven.modrinth:baubles-expanded:2.1.4"
     //compileOnly fileTree("libs/Techguns.beta.1.2_alphatest4.1.jar")
-    //api("com.github.GTNewHorizons:ModularUI2:2.0.6-1.7.10:dev")
-//    compile "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
-//    compile "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
-//    api "micdoodle8.mods:Galacticraft-Planets:1.7-3.0.12.504:Dev"
+    //api("com.github.GTNewHorizons:ModularUI2:2.0.6-1.7.10:dev"
+    compileOnly "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
+    compileOnly "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
+    compileOnly "micdoodle8.mods:Galacticraft-Planets:1.7-3.0.12.504:Dev"
+    compileOnly "ic2:IC2Classic:1.2.1.8:dev"
 //    api "codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev"
 //    api "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
     //api 'com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev'
