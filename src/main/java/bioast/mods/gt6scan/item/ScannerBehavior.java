@@ -140,20 +140,21 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	@Override
 	public ItemStack onItemRightClick(MultiItem aItem, ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
 		UT.Sounds.play(CS.SFX.IC_SCANNER, 20, 1.0F, aPlayer);
-		if (!UT.Entities.isCreative(aPlayer)) {
-			if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
-		}
-		List<String> chat = new ArrayList<>();
-		List<String> chat_debug = new ArrayList<>();
 		if (aStack != null && (aPlayer == null || aPlayer.isSneaking()) && !aWorld.isRemote) {
 			changeMode(aPlayer, aStack, getMode(aStack));
 			return aStack;
 		}
-		if (!aWorld.isRemote) {
+//		if (!UT.Entities.isCreative(aPlayer)) {
+//			if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
+//		}
+		List<String> chat = new ArrayList<>();
+		List<String> chat_debug = new ArrayList<>();
+
+		if (!aWorld.isRemote)
 			serverLogic(aStack, aWorld, aPlayer, chat_debug);
-			if (!UT.Entities.isCreative(aPlayer))
-				aItem.useEnergy(TD.Energy.LU, aStack, sortedOres.keySet().size() * CS.V[6] * Math.min(oresFound / 100, 30), aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
-		}
+//			if (!UT.Entities.isCreative(aPlayer))
+//				aItem.useEnergy(TD.Energy.LU, aStack, sortedOres.keySet().size() * CS.V[6] * Math.min(oresFound / 100, 30), aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
+//		}
 		//chat.add("Booting Up the Device In " + mode.name() + " mode...");
 		//chat.add("Found " + oresFound + " Ores.");
 		UT.Entities.sendchat(aPlayer, chat, false);
