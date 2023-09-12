@@ -67,8 +67,8 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	int z_origin;
 	boolean usePower = false;
 
-	/* CLIENT ONLY*/ int[][] block = new int[16 * chunkSize][16 * chunkSize]; // store color
-	/* CLIENT ONLY*/ short[][] blockMat = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
+	/* CLIENT ONLY*/ int[][] blockColorStorage = new int[16 * chunkSize][16 * chunkSize]; // store color
+	/* CLIENT ONLY*/ short[][] blockMatStorage = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
 
 	public ScannerBehavior(int sizeIn) {
 		chunkSize = sizeIn;
@@ -388,7 +388,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		//ScannerMod.debug.info(z_origin);
 
 		/* CLIENT CODE */
-		blockMat = new short[chunkSize * 16][chunkSize * 16];
+		blockMatStorage = new short[chunkSize * 16][chunkSize * 16];
 		int borderColor = col(MT.Gray);
 		int backgroundColor = col(MT.White);
 		int oreColor = 0;
@@ -415,7 +415,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 										int lastCount = sortedOres.get(data.matID);
 										sortedOres.put(data.matID, lastCount + 1);
 									} else sortedOres.put(data.matID, 1);
-									blockMat[blockGridX][blockGridZ] = data.matID;
+									blockMatStorage[blockGridX][blockGridZ] = data.matID;
 									isOre = true;
 								}
 							}
@@ -423,14 +423,14 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 							e.printStackTrace();
 						}
 
-						block[blockGridX][blockGridZ] = backgroundColor;
+						blockColorStorage[blockGridX][blockGridZ] = backgroundColor;
 						if (isOre) {
-							block[blockGridX][blockGridZ] = oreColor;
+							blockColorStorage[blockGridX][blockGridZ] = oreColor;
 						}
 						if (x == 15 || z == 15 || x == 0 || z == 0) // We Skip 16th block to draw Borders
-							block[blockGridX][blockGridZ] = borderColor;
+							blockColorStorage[blockGridX][blockGridZ] = borderColor;
 						if (chunkGridZ == (chunkSize - 1) / 2 && chunkGridX == (chunkSize - 1) / 2 && x == 7 && z == 7)
-							block[blockGridX][blockGridZ] = col(MT.Red);
+							blockColorStorage[blockGridX][blockGridZ] = col(MT.Red);
 					}
 				}
 			}
@@ -455,12 +455,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 				OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
 				for (int i = 0; i < 16 * chunkSize; i++) {
 					for (int j = 16 * chunkSize - 1; j >= 0; j--) {
-						if (block[i][j] == col(MT.White)) continue;
+						if (blockColorStorage[i][j] == col(MT.White)) continue;
 //                        GuiDraw.drawRect(i, j, 1, 1, block[i][j]);
 						//
 
 						GL11.glShadeModel(GL11.GL_SMOOTH);
-						int color = block[i][j];
+						int color = blockColorStorage[i][j];
 						Tessellator.instance.startDrawingQuads();
 //                        Tessellator.instance.addVertex(i+0.5,j+0.5,0);
 //                        Tessellator.instance.setColorOpaque_I(color);
@@ -482,7 +482,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 				String corN = " ";
 				int text_color = col(MT.White);
 				try {
-					short mat = blockMat[(guiContext.getAbsMouseX() - panel.getArea().x - x - 10)][(guiContext.getAbsMouseY() - panel.getArea().y - y - 10)];
+					short mat = blockMatStorage[(guiContext.getAbsMouseX() - panel.getArea().x - x - 10)][(guiContext.getAbsMouseY() - panel.getArea().y - y - 10)];
 					if (mat != 0) {
 						corN = OreDictMaterial.MATERIAL_ARRAY[mat].mNameLocal;
 						text_color = col(OreDictMaterial.MATERIAL_ARRAY[mat]);

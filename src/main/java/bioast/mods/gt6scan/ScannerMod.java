@@ -101,7 +101,7 @@ public class ScannerMod extends Abstract_Mod {
         MinecraftForge.EVENT_BUS.register(this);
         proxy.init(aEvent);
 
-        if(config.get("core","useCheatTool",false)){
+        if(config.get("core","useCheatTool",true)){
             CS.ItemsGT.TOOLS.addItemBehavior(9001,new ScannerBehavior());
         }
     }
