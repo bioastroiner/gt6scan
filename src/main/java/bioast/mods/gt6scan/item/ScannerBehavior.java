@@ -495,10 +495,14 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 			Grid listWidget = new Grid().scrollable().size(150, 150).pos(280 - 125, 0);
 			sortedOres.forEach((matID, amount) -> {
 				OreDictMaterial mat = OreDictMaterial.MATERIAL_ARRAY[matID];
-				IWidget itemWidget = wItem(mat, mode);
-				String name = mat.mNameInternal;
-				if (name.contains("Methan")) name = "Natural Gas";
-				IWidget nameWidget = new TextWidget(IKey.str(name + ": " + amount)).color(UT.Code.getRGBaInt((mat.fRGBaSolid))).shadow(true);
+                IWidget itemWidget = wItem(mat, mode);
+                String name = mat.mNameLocal;
+                int color = UT.Code.getRGBaInt((mat.fRGBaSolid));
+                if(mat==MT.MethaneIce){
+                    color = UT.Code.getRGBaInt(MT.Milk.fRGBaSolid);
+                    name = CS.BlocksGT.GasNatural.getLocalizedName();
+                }
+				IWidget nameWidget = new TextWidget(IKey.str(name + ": " + amount)).color(color).shadow(true);
 				listWidget.row(itemWidget, nameWidget).nextRow();
 			});
 			panel.child(mapWidget);
