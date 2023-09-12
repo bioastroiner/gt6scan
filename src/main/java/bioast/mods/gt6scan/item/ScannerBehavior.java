@@ -26,7 +26,6 @@ import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.OM;
 import gregapi.util.UT;
-import gregapi.util.WD;
 import gregtech.blocks.BlockDiggable;
 import gregtech.blocks.stone.BlockCrystalOres;
 import gregtech.blocks.stone.BlockRockOres;
@@ -36,7 +35,6 @@ import gregtech.tileentity.placeables.MultiTileEntityRock;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -101,7 +99,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 	private IWidget wItem(OreDictMaterial mat, ScanMode mode) {
 		OreDictPrefix prefix = OP.oreRaw;
 		if (mode == ScanMode.SMALL) prefix = OP.crushed;
-		if (mode.OP == OP.bucket) prefix = OP.bucket;
+		if (mode.PREFIX == OP.bucket) prefix = OP.bucket;
 		if (mode == ScanMode.ROCK) prefix = OP.rockGt;
 		if (mat.mNameInternal.contains("Peat")) prefix = OP.ingot;
 		if (mat.mNameInternal.contains("Clay")) prefix = OP.dust;
@@ -122,7 +120,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		try {
 			currentMode = ScanMode.values()[nextMode];
 		} catch (ArrayIndexOutOfBoundsException e) {
-			currentMode = ScanMode.LARGE;
+			currentMode = ScanMode.NONE;
 		}
 		UT.NBT.makeInt(UT.NBT.getNBT(aStack),"mode", currentMode.ordinal());
 		UT.Entities.sendchat(aPlayer, "Mode: " + currentMode.name());
@@ -134,7 +132,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 		if (!tag.hasKey("mode")) {
 			UT.NBT.makeInt(tag, 0);
 			UT.NBT.set(aStack, tag);
-			return ScanMode.LARGE;
+			return ScanMode.NONE;
 		} else {
 			return ScanMode.values()[tag.getInteger("mode")];
 		}
@@ -147,9 +145,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 			changeMode(aPlayer, aStack, getMode(aStack));
 			return aStack;
 		}
-		if (doTroll(aStack, aWorld, aPlayer)) return aStack;
+        if(!aWorld.isRemote && getMode(aStack) == ScanMode.NONE){
+            return aStack;
+        }
 		List<String> chat_debug = new ArrayList<>();
-		if (!aWorld.isRemote){
+		if (!aWorld.isRemote && getMode(aStack) != ScanMode.NONE){
+            if (doTroll(aStack, aWorld, aPlayer)) return aStack;
 			if (!UT.Entities.isCreative(aPlayer) && usePower) {
 				if (aItem.getEnergyStored(TD.Energy.LU, aStack) < CS.V[6]) return aStack;
 			}
@@ -342,7 +343,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 							isBedrock = pBlock.mNameInternal.contains("bedrock");
 							//ScannerMod.debug.info(pBlock.mNameInternal);
 						}
-						if (isBedrock || pBlock.mPrefix.mFamiliarPrefixes.contains(mode.OP)) {
+						if (isBedrock || pBlock.mPrefix.mFamiliarPrefixes.contains(mode.PREFIX)) {
 							short matID = pTile.mMetaData;
 							int x = pTile.getX();
 							int y = pTile.getY();

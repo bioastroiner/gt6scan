@@ -3,15 +3,19 @@ package bioast.mods.gt6scan.item;
 import gregapi.oredict.OreDictPrefix;
 
 enum ScanMode {
+    NONE(null),
     LARGE(gregapi.data.OP.ore), SMALL(gregapi.data.OP.oreSmall), DENSE_AND_NORMAL(gregapi.data.OP.oreDense), BEDROCK(gregapi.data.OP.oreBedrock), FLUID_BEDROCK(gregapi.data.OP.bucket), ROCK(gregapi.data.OP.rockGt),FLUID(gregapi.data.OP.bucket);
-    public final OreDictPrefix OP;
+    public final OreDictPrefix PREFIX;
 
     ScanMode(OreDictPrefix op) {
-        OP = op;
+        PREFIX = op;
     }
 
     public boolean isTE() {
         switch (this) {
+            case NONE -> {
+                return false;
+            }
             case LARGE -> {
                 return true;
             }
