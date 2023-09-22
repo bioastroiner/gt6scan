@@ -3,17 +3,23 @@ package bioast.mods.gt6scan;
 import bioast.mods.gt6scan.item.ScannerBehavior;
 import bioast.mods.gt6scan.item.ScannerMultiTool;
 import bioast.mods.gt6scan.proxy.CommonProxy;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
 import gregapi.config.Config;
 import gregapi.data.CS;
+import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import twilightforest.TwilightForestMod;
+import twilightforest.item.ItemTFMagicMap;
 
 import static bioast.mods.gt6scan.ScannerMod.*;
 
@@ -94,12 +100,17 @@ public class ScannerMod extends Abstract_Mod {
         proxy.preInit(aEvent);
         config = new Config(CS.DirectoriesGT.CONFIG_GT,"scanner.cfg");
         new ScannerMultiTool();
+        Item item = new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
+        GameRegistry.registerItem(item, item.getUnlocalizedName(), MODID);
     }
 
     @Override
     public void onModInit2(FMLInitializationEvent aEvent) {
         MinecraftForge.EVENT_BUS.register(this);
+//        FMLCommonHandler.instance().bus().register(eventListener); // we're getting events off this bus too
+
         proxy.init(aEvent);
+        NetworkRegistry.INSTANCE.newEventDrivenChannel(ItemProspectMap.STR_ID).register( new MapPacketHandler());
 
         if(config.get("core","useCheatTool",true)){
             CS.ItemsGT.TOOLS.addItemBehavior(9001,new ScannerBehavior());
