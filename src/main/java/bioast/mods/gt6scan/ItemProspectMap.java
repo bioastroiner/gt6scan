@@ -8,6 +8,7 @@ import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.UT;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -108,7 +109,7 @@ public class ItemProspectMap extends ItemMap {
 										OreDictPrefix prefix = prefixBlock.mPrefix;
 										OreDictMaterial material = OreDictMaterial.MATERIAL_ARRAY[prefixBlockTileEntity.mMetaData];
 										if (prefix.mFamiliarPrefixes.contains(OP.ore)) {
-											colorindex = UT.Code.getRGBaInt(material.mRGBaSolid);
+											colorindex = UT.Code.getRGBInt(material.mRGBaSolid);
 											break;
 										}
 									}
@@ -117,7 +118,8 @@ public class ItemProspectMap extends ItemMap {
 								}
 							}
 							if (zStep >= 0 && xOffset * xOffset + zOffset * zOffset < drawSize * drawSize && (!var20 || (xStep + zStep & 1) != 0)) {
-								par3MapData.colors[xStep + zStep * xSize] = (byte) colorindex;
+								par3MapData.colors[xStep + zStep * xSize] = (byte) (MapColor.getMapColorForBlockColored(colorindex).colorIndex);
+
 								if (highNumber > zStep) {
 									highNumber = zStep;
 								}
