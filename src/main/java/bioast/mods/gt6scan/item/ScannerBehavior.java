@@ -290,7 +290,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 										String fluidName = ((IFluidBlock) block1).getFluid().getName();
 										matID = MT.Air.mID;
 										if (fluidName.contains("natural")) matID = MT.MethaneIce.mID;
-										if (fluidName.contains("water")) matID = MT.Water.mID;
+
 										if (fluidName.contains("oil")) matID = MT.Oil.mID;
 										if (fluidName.contains("honey")) matID = MT.Honey.mID;
 										if (fluidName.contains("sulfuric")) matID = MT.H2SO4.mID;
@@ -299,15 +299,32 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault implement
 										if (fluidName.contains("infused")) matID = MT.InfusedWater.mID;
 										if (fluidName.contains("mana")) matID = MT.Magic.mID;
 										if (block1 == CS.BlocksGT.WaterGeothermal) matID = MT.DistWater.mID;
-										if (block1 == CS.BlocksGT.Swamp) matID = MT.DirtyWater.mID;
-										if (block1 == CS.BlocksGT.River) matID = MT.FreshWater.mID;
-										if (block1 == CS.BlocksGT.Ocean) {
-											/*skip ocean*/
-											matID = MT.SeaWater.mID;
+										if (fluidName.contains("water")) {
+											matID = MT.Water.mID;
 											scannedOres.add(new OreData(x, y, z, matID));
 											oresFound++;
 											break;
 										}
+//										if (block1 == CS.BlocksGT.Swamp) {
+//											matID = MT.DirtyWater.mID;
+//											scannedOres.add(new OreData(x, y, z, matID));
+//											oresFound++;
+//											break;
+//										}
+//										if (block1 == CS.BlocksGT.River) {
+//											matID = MT.FreshWater.mID;
+//											scannedOres.add(new OreData(x, y, z, matID));
+//											oresFound++;
+//											break;
+//										}
+
+//										if (block1 == CS.BlocksGT.Ocean) {
+//											/*skip ocean*/
+////											matID = MT.SeaWater.mID;
+////											scannedOres.add(new OreData(x, y, z, matID));
+////											oresFound++;
+////											break;
+//										}
 										if (matID != MT.Air.mID) {
 											scannedOres.add(new OreData(x, y, z, matID));
 											oresFound++;

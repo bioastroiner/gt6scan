@@ -50,6 +50,9 @@ dependencies {
     compileOnly "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
     compileOnly "micdoodle8.mods:Galacticraft-Planets:1.7-3.0.12.504:Dev"
     compileOnly "ic2:IC2Classic:1.2.1.8:dev"
+
+    compileOnly "twilightforest:twilightforest:1.7.10-2.3.8dev:dev"
+    compileOnly "blusunrize:ImmersiveEngineering:0.7.7:deobf"
 //    api "codechicken:CodeChickenLib:1.7.10-1.1.3.140:dev"
 //    api "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
     //api 'com.github.GTNewHorizons:CodeChickenLib:1.1.8:dev'
