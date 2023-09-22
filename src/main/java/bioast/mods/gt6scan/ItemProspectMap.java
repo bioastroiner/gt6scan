@@ -19,6 +19,7 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
+import twilightforest.TFMazeMapData;
 
 public class ItemProspectMap extends ItemMap {
 	public static final String STR_ID = "prospectmap";
@@ -50,7 +51,7 @@ public class ItemProspectMap extends ItemMap {
 			mapData = new ProspectMapData(mapName);
 			mapData.xCenter = par2World.getWorldInfo().getSpawnX();
 			mapData.zCenter = par2World.getWorldInfo().getSpawnZ();
-			mapData.scale = 4;
+			mapData.scale = 0;
 			mapData.dimension = par2World.provider.dimensionId;
 			mapData.markDirty();
 			par2World.setItemData(mapName, mapData);

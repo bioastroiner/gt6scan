@@ -94,14 +94,17 @@ public class ScannerMod extends Abstract_Mod {
         onModServerStopped(aEvent);
     }
 
+    public static Item mapWritten,mapEmpty;
     @Override
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
         instance = this;
         proxy.preInit(aEvent);
         config = new Config(CS.DirectoriesGT.CONFIG_GT,"scanner.cfg");
         new ScannerMultiTool();
-        Item item = new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
-        GameRegistry.registerItem(item, item.getUnlocalizedName(), MODID);
+        mapWritten = new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
+        mapEmpty = new ItemEmptyProspectMap().setUnlocalizedName("emptyProspectingMap").setMaxStackSize(1);
+        GameRegistry.registerItem(mapWritten, mapWritten.getUnlocalizedName(), MODID);
+        GameRegistry.registerItem(mapEmpty, mapEmpty.getUnlocalizedName(), MODID);
     }
 
     @Override
