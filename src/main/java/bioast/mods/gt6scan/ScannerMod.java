@@ -108,7 +108,7 @@ public class ScannerMod extends Abstract_Mod {
         GameRegistry.registerItem(mapEmpty, mapEmpty.getUnlocalizedName(), MODID);
         LH.add(mapWritten.getUnlocalizedName(), "Geographical Prospecting Map");
         LH.add(mapEmpty.getUnlocalizedName(), "Empty Geographical Prospecting Map");
-        CR.shaped(ST.make(mapEmpty, 1, CS.W), CR.DEF, "XXX", "XBX", "XXX", 'W', OreDictionary.getOres("paper"), 'B', OD.itemRock);
+        CR.shaped(ST.make(mapEmpty, 1, CS.W), CR.DEF, "XXX", "XBX", "XXX", 'X', OreDictionary.getOres("paper"), 'B', OD.itemRock);
     }
 
     @Override
