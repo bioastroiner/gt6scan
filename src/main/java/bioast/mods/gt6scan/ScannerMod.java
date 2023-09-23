@@ -12,10 +12,13 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
 import gregapi.config.Config;
-import gregapi.data.CS;
+import gregapi.data.*;
+import gregapi.util.CR;
+import gregapi.util.ST;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import twilightforest.TwilightForestMod;
@@ -25,7 +28,7 @@ import static bioast.mods.gt6scan.ScannerMod.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME,dependencies = DEPENDENCIES)
 public class ScannerMod extends Abstract_Mod {
-    public static final String DEPENDENCIES = "required-after:modularui@[2.0.6,);after:gregapi";
+    public static final String DEPENDENCIES = "after:modularui@[2.0.6,);required-after:gregapi";
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
     public static final String VERSION = "GRADLETOKEN_VERSION";
@@ -105,6 +108,9 @@ public class ScannerMod extends Abstract_Mod {
         mapEmpty = new ItemEmptyProspectMap().setUnlocalizedName("emptyProspectingMap").setMaxStackSize(1);
         GameRegistry.registerItem(mapWritten, mapWritten.getUnlocalizedName(), MODID);
         GameRegistry.registerItem(mapEmpty, mapEmpty.getUnlocalizedName(), MODID);
+        LH.add(mapWritten.getUnlocalizedName(),"Geographical Prospecting Map");
+        LH.add(mapEmpty.getUnlocalizedName(),"Empty Geographical Prospecting Map");
+        CR.shaped(ST.make(mapEmpty,1,CS.W),CR.DEF,"XXX","XBX","XXX",'W', OreDictionary.getOres("paper"),'B', OD.itemRock);
     }
 
     @Override

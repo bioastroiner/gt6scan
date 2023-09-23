@@ -4,6 +4,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
+import gregapi.data.MT;
 import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
@@ -20,12 +21,11 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
-import twilightforest.TFMazeMapData;
+
+import java.awt.*;
 
 public class ItemProspectMap extends ItemMap {
 	public static final String STR_ID = "prospectmap";
-	private static final int YSEARCH = 50;
-	protected boolean mapOres = true;
 
 	@SideOnly(Side.CLIENT)
 	public static ProspectMapData getMPMapData(int par0, World par1World) {
@@ -39,6 +39,37 @@ public class ItemProspectMap extends ItemMap {
 		}
 
 		return mapData;
+	}
+
+	static double colourDistance(int e1,int e2)
+	{
+		int rmean = (UT.Code.getR(e1) + UT.Code.getR(e2) ) / 2;
+		int r = UT.Code.getR(e1) - UT.Code.getR(e2);
+		int g = UT.Code.getG(e1) - UT.Code.getG(e2);
+		int b = UT.Code.getB(e1) - UT.Code.getB(e2);
+		return Math.sqrt((((512+rmean)*r*r)>>8) + 4*g*g + (((767-rmean)*b*b)>>8));
+	}
+
+	private static int searchForTopBlockInVerticalColumn(Chunk chunk, int x, int z) {
+		int y;
+		int color = 0;
+		for (int i = chunk.worldObj.getHeightValue(x, z); i >= 0; i--) {
+			y = i;
+			try {
+				if (chunk.getTileEntityUnsafe(x & 15, y, z & 15) instanceof PrefixBlockTileEntity prefixBlockTileEntity) {
+					PrefixBlock prefixBlock = (PrefixBlock) prefixBlockTileEntity.getBlock(x, y, z);
+					OreDictPrefix prefix = prefixBlock.mPrefix;
+					OreDictMaterial material = OreDictMaterial.MATERIAL_ARRAY[prefixBlockTileEntity.mMetaData];
+					if (prefix.mFamiliarPrefixes.contains(OP.ore)) {
+						color = UT.Code.getRGBInt(material.mRGBaSolid);
+						break;
+					}
+				}
+			} catch (Exception ignored) {
+			}
+		}
+		// color was found now we try to find the most similar map color to it and return its index
+		return ColorMap.asMinecraftMapColor(color).colorIndex;
 	}
 
 	@Override
@@ -79,7 +110,7 @@ public class ItemProspectMap extends ItemMap {
 			int zCenter = par3MapData.zCenter;
 			int xDraw = MathHelper.floor_double(par2Entity.posX - (double) xCenter) + xSize / 2;
 			int zDraw = MathHelper.floor_double(par2Entity.posZ - (double) zCenter) + zSize / 2;
-			int drawSize = 16;
+			int drawSize = 128;
 
 			MapData.MapInfo mapInfo = par3MapData.func_82568_a((EntityPlayer) par2Entity);
 			++mapInfo.field_82569_d;
@@ -99,58 +130,29 @@ public class ItemProspectMap extends ItemMap {
 							int x = xDraw2;
 							int z = zDraw2;
 							Chunk chunk = par1World.getChunkFromBlockCoords(xDraw2, zDraw2);
-							int y = 0;
-							int colorindex = 0;
-							for (int i = 200; i >= 0; i--) {
-								y = i;
-								try {
-									if (chunk.getTileEntityUnsafe(x&15, y, z&15) instanceof PrefixBlockTileEntity prefixBlockTileEntity) {
-										PrefixBlock prefixBlock = (PrefixBlock) prefixBlockTileEntity.getBlock(x, y, z);
-										OreDictPrefix prefix = prefixBlock.mPrefix;
-										OreDictMaterial material = OreDictMaterial.MATERIAL_ARRAY[prefixBlockTileEntity.mMetaData];
-										if (prefix.mFamiliarPrefixes.contains(OP.ore)) {
-											colorindex = UT.Code.getRGBInt(material.mRGBaSolid);
-											break;
-										}
-									}
-								} catch (Exception e) {
-									continue;
-								}
-							}
+							int colorIndex = searchForTopBlockInVerticalColumn(chunk, x, z);
 							if (zStep >= 0 && xOffset * xOffset + zOffset * zOffset < drawSize * drawSize && (!var20 || (xStep + zStep & 1) != 0)) {
-								par3MapData.colors[xStep + zStep * xSize] = (byte) (MapColor.getMapColorForBlockColored(colorindex).colorIndex);
-
-								if (highNumber > zStep) {
-									highNumber = zStep;
-								}
-								if (lowNumber < zStep) {
-									lowNumber = zStep;
-								}
+								par3MapData.colors[xStep + zStep * xSize] = (byte) (colorIndex*4);
+								if (highNumber > zStep) highNumber = zStep;
+								if (lowNumber < zStep) lowNumber = zStep;
 							}
 						}
-					if (highNumber <= lowNumber) {
-						par3MapData.setColumnDirty(xStep, highNumber, lowNumber);
-					}
+					if (highNumber <= lowNumber) par3MapData.setColumnDirty(xStep, highNumber, lowNumber);
 				}
 		}
 	}
 
-	public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean isActiveItem) {
-		if (!par2World.isRemote) {
-			ProspectMapData mapData = this.getMapData(par1ItemStack, par2World);
-			if (par3Entity instanceof EntityPlayer) {
-				EntityPlayer player = (EntityPlayer) par3Entity;
-				mapData.updateVisiblePlayers(player, par1ItemStack);
-				// fix player icon so that it's a dot
-				MapData.MapCoord mapCoord = (MapData.MapCoord) mapData.playersVisibleOnMap.get(player.getCommandSenderName());
-				if (mapCoord != null) {
-					mapCoord.iconSize = 6;
-				}
-			}
-			if (isActiveItem) {
-				this.updateMapData(par2World, par3Entity, mapData);
-			}
+	@Override
+	public void onUpdate(ItemStack aStack, World worldIn, Entity entityIn, int partialTicks, boolean isActiveItem) {
+		if (worldIn.isRemote) return;
+		ProspectMapData mapData = this.getMapData(aStack, worldIn);
+		if (entityIn instanceof EntityPlayer player) {
+			mapData.updateVisiblePlayers(player, aStack);
+			// fix player icon so that it's a dot
+			MapData.MapCoord mapCoord = (MapData.MapCoord) mapData.playersVisibleOnMap.get(player.getCommandSenderName());
+			if (mapCoord != null) mapCoord.iconSize = 6;
 		}
+		if (isActiveItem) this.updateMapData(worldIn, entityIn, mapData);
 	}
 
 	@Override
@@ -169,16 +171,17 @@ public class ItemProspectMap extends ItemMap {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer player) {
-		itemStackIn.setItemDamage(worldIn.getUniqueDataId(STR_ID));
-		String mapName = STR_ID + "_" + itemStackIn.getItemDamage();
-		ProspectMapData mapData = new ProspectMapData(mapName);
-		worldIn.setItemData(mapName, mapData);
-		mapData.xCenter = MathHelper.floor_double(player.posX);
-		mapData.yCenter = MathHelper.floor_double(player.posY);
-		mapData.zCenter = MathHelper.floor_double(player.posZ);
-		mapData.scale = 0;
-		mapData.dimension = worldIn.provider.dimensionId;
-		mapData.markDirty();
+//		itemStackIn.setItemDamage(worldIn.getUniqueDataId(STR_ID));
+//		String mapName = STR_ID + "_" + itemStackIn.getItemDamage();
+//		ProspectMapData mapData = new ProspectMapData(mapName);
+//		worldIn.setItemData(mapName, mapData);
+//		mapData.xCenter = MathHelper.floor_double(player.posX);
+//		mapData.yCenter = MathHelper.floor_double(player.posY);
+//		mapData.zCenter = MathHelper.floor_double(player.posZ);
+//		mapData.scale = 0;
+//		mapData.dimension = worldIn.provider.dimensionId;
+//		mapData.markDirty();
+//		return itemStackIn;
 		return itemStackIn;
 	}
 
@@ -191,10 +194,8 @@ public class ItemProspectMap extends ItemMap {
 	public Packet func_150911_c(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
 		//System.out.println("yCenter = " + this.getMapData(par1ItemStack, par2World).yCenter);
 		byte[] mapBytes = this.getMapData(par1ItemStack, par2World).getUpdatePacketData(par1ItemStack, par2World, par3EntityPlayer);
-
-		if (mapBytes == null) {
-			return null;
-		} else {
+		if (mapBytes == null) return null;
+		else {
 			short uniqueID = (short) par1ItemStack.getItemDamage();
 			return MapPacketHandler.makeProspectingMapHandler(ItemProspectMap.STR_ID, uniqueID, mapBytes);
 		}
