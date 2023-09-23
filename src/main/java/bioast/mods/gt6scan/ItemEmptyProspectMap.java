@@ -2,7 +2,6 @@ package bioast.mods.gt6scan;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregapi.data.LH;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemMapBase;
@@ -24,8 +23,8 @@ public class ItemEmptyProspectMap extends ItemMapBase {
 //		mapData.zCenter = (int) (Math.round(par3EntityPlayer.posZ / step) * step);
 //		mapData.yCenter = MathHelper.floor_double(par3EntityPlayer.posY);
 		int i = 128 * (1 << mapData.scale);
-		mapData.xCenter = (int)(Math.round(par3EntityPlayer.posX / (double)i) * (long)i);
-		mapData.zCenter = (int)(Math.round(par3EntityPlayer.posZ / (double)i) * (long)i);
+		mapData.xCenter = (int) (Math.round(par3EntityPlayer.posX / (double) i) * (long) i);
+		mapData.zCenter = (int) (Math.round(par3EntityPlayer.posZ / (double) i) * (long) i);
 //		mapData.xCenter = MathHelper.floor_double(par3EntityPlayer.posX);
 //		mapData.zCenter = MathHelper.floor_double(par3EntityPlayer.posZ);
 		mapData.yCenter = MathHelper.floor_double(par3EntityPlayer.posY);

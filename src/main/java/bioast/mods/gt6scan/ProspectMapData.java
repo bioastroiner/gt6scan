@@ -4,26 +4,27 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.storage.MapData;
 
 public class ProspectMapData extends MapData {
-    public int yCenter;
-    public ProspectMapData(String p_i2140_1_) {
-        super(p_i2140_1_);
-    }
+	public int yCenter;
 
-    @Override
-    public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
-        super.readFromNBT(par1NBTTagCompound);
+	public ProspectMapData(String p_i2140_1_) {
+		super(p_i2140_1_);
+	}
 
-        this.yCenter = par1NBTTagCompound.getInteger("yCenter");
-    }
+	@Override
+	public void readFromNBT(NBTTagCompound par1NBTTagCompound) {
+		super.readFromNBT(par1NBTTagCompound);
 
-    /**
-     * write data to NBTTagCompound from this MapDataBase, similar to Entities and TileEntities
-     */
-    @Override
-    public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
-        super.writeToNBT(par1NBTTagCompound);
+		this.yCenter = par1NBTTagCompound.getInteger("yCenter");
+	}
 
-        par1NBTTagCompound.setInteger("yCenter", this.yCenter);
+	/**
+	 * write data to NBTTagCompound from this MapDataBase, similar to Entities and TileEntities
+	 */
+	@Override
+	public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
+		super.writeToNBT(par1NBTTagCompound);
 
-    }
+		par1NBTTagCompound.setInteger("yCenter", this.yCenter);
+
+	}
 }

@@ -4,12 +4,10 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
-import gregapi.data.MT;
 import gregapi.data.OP;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
 import gregapi.util.UT;
-import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,8 +19,6 @@ import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
-
-import java.awt.*;
 
 public class ItemProspectMap extends ItemMap {
 	public static final String STR_ID = "prospectmap";
@@ -41,13 +37,12 @@ public class ItemProspectMap extends ItemMap {
 		return mapData;
 	}
 
-	static double colourDistance(int e1,int e2)
-	{
-		int rmean = (UT.Code.getR(e1) + UT.Code.getR(e2) ) / 2;
+	static double colourDistance(int e1, int e2) {
+		int rmean = (UT.Code.getR(e1) + UT.Code.getR(e2)) / 2;
 		int r = UT.Code.getR(e1) - UT.Code.getR(e2);
 		int g = UT.Code.getG(e1) - UT.Code.getG(e2);
 		int b = UT.Code.getB(e1) - UT.Code.getB(e2);
-		return Math.sqrt((((512+rmean)*r*r)>>8) + 4*g*g + (((767-rmean)*b*b)>>8));
+		return Math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8));
 	}
 
 	private static int searchForTopBlockInVerticalColumn(Chunk chunk, int x, int z) {
@@ -132,7 +127,7 @@ public class ItemProspectMap extends ItemMap {
 							Chunk chunk = par1World.getChunkFromBlockCoords(xDraw2, zDraw2);
 							int colorIndex = searchForTopBlockInVerticalColumn(chunk, x, z);
 							if (zStep >= 0 && xOffset * xOffset + zOffset * zOffset < drawSize * drawSize && (!var20 || (xStep + zStep & 1) != 0)) {
-								par3MapData.colors[xStep + zStep * xSize] = (byte) (colorIndex*4);
+								par3MapData.colors[xStep + zStep * xSize] = (byte) (colorIndex * 4);
 								if (highNumber > zStep) highNumber = zStep;
 								if (lowNumber < zStep) lowNumber = zStep;
 							}
@@ -205,7 +200,7 @@ public class ItemProspectMap extends ItemMap {
 	 * Add the map number to the tooltip
 	 */
 	public String getItemStackDisplayName(ItemStack par1ItemStack) {
-		return ("" + StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(par1ItemStack) + ".name") + " #" + par1ItemStack.getItemDamage()).trim();
+		return (StatCollector.translateToLocal(this.getUnlocalizedNameInefficiently(par1ItemStack) + ".name") + " #" + par1ItemStack.getItemDamage()).trim();
 	}
 
 	/**

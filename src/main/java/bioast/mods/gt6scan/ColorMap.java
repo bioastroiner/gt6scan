@@ -4,8 +4,6 @@ import gregapi.data.MT;
 import gregapi.util.UT;
 import net.minecraft.block.material.MapColor;
 
-import java.awt.*;
-
 public class ColorMap {
 	public static final int airColor = 0;
 	public static final int grassColor = 8368696;
@@ -85,7 +83,7 @@ public class ColorMap {
 		int closestColor = -1;
 		var closestDistance = Double.POSITIVE_INFINITY;
 		for (final int colorTarget : ColorMap.cols) {
-			if(colorTarget==ColorMap.magentaColor && (color==UT.Code.getRGBInt(MT.Lapis.mRGBaSolid) || color==UT.Code.getRGBInt(MT.BlueSapphire.mRGBaSolid)))
+			if (colorTarget == ColorMap.magentaColor && (color == UT.Code.getRGBInt(MT.Lapis.mRGBaSolid) || color == UT.Code.getRGBInt(MT.BlueSapphire.mRGBaSolid)))
 				continue;
 			var h0 = getHue(colorTarget);
 			var h1 = getHue(color);
@@ -93,10 +91,10 @@ public class ColorMap {
 			var v1 = getValue(color);
 			var s0 = getSaturation(colorTarget);
 			var s1 = getSaturation(color);
-			var dh = Math.min(Math.abs(h1-h0), 360-Math.abs(h1-h0)) / 180.0;
-			var ds = Math.abs(s1-s0);
-			var dv = Math.abs(v1-v0) / 255.0;
-			final var distance = Math.sqrt(dh*dh+ds*ds+dv*dv);
+			var dh = Math.min(Math.abs(h1 - h0), 360 - Math.abs(h1 - h0)) / 180.0;
+			var ds = Math.abs(s1 - s0);
+			var dv = Math.abs(v1 - v0) / 255.0;
+			final var distance = Math.sqrt(dh * dh + ds * ds + dv * dv);
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				closestColor = colorTarget;
@@ -115,7 +113,7 @@ public class ColorMap {
 		if (g >= r && g >= b) {
 			return (int) (((b - r) / (g - min)) + 2) * 60;
 		}
-		if(b >= r && b >= g) {
+		if (b >= r && b >= g) {
 			return (int) (((r - g) / (b - min)) + 4) * 60;
 		}
 		return 0;
@@ -134,11 +132,11 @@ public class ColorMap {
 		return Math.max(r, Math.max(g, b));
 	}
 
-	public static MapColor asMinecraftMapColor(int color){
+	public static MapColor asMinecraftMapColor(int color) {
 		color = findClosestColorTo(color);
 		for (int i = 0; i < cols.length; i++) {
-			if(color == cols[i]){
-				if(MapColor.mapColorArray.length>i)
+			if (color == cols[i]) {
+				if (MapColor.mapColorArray.length > i)
 					return MapColor.mapColorArray[i];
 			}
 		}
