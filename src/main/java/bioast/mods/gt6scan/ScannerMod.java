@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static bioast.mods.gt6scan.ScannerMod.*;
+import static gregapi.data.CS.W;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME, dependencies = DEPENDENCIES)
 public class ScannerMod extends Abstract_Mod {
@@ -108,7 +109,7 @@ public class ScannerMod extends Abstract_Mod {
         GameRegistry.registerItem(mapEmpty, mapEmpty.getUnlocalizedName(), MODID);
         LH.add(mapWritten.getUnlocalizedName(), "Geographical Prospecting Map");
         LH.add(mapEmpty.getUnlocalizedName(), "Empty Geographical Prospecting Map");
-        CR.shaped(ST.make(mapEmpty, 1, CS.W), CR.DEF, "XXX", "XBX", "XXX", 'X', OreDictionary.getOres("paper"), 'B', OD.itemRock);
+        CR.shaped(ST.make(mapEmpty, 1, W), CR.DEF, "XXX", "XBX", "XXX", 'X', OreDictionary.getOres("paper"), 'B', OD.itemRock);
     }
 
     @Override

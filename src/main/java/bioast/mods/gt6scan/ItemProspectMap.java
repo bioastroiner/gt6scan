@@ -5,8 +5,11 @@ import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
 import gregapi.data.OP;
+import gregapi.oredict.OreDictItemData;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
+import gregapi.util.OM;
+import gregapi.util.ST;
 import gregapi.util.UT;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -59,6 +62,11 @@ public class ItemProspectMap extends ItemMap {
 						color = UT.Code.getRGBInt(material.mRGBaSolid);
 						break;
 					}
+				}
+				OreDictItemData data = OM.anyassociation(ST.make(chunk.getBlock(x & 15, y, z & 15), 1, chunk.getBlockMetadata(x & 15, y, z & 15)));
+				if (data != null && data.mPrefix.mFamiliarPrefixes.contains(OP.oreDense)) {
+					color = UT.Code.getRGBaInt(data.mMaterial.mMaterial.mRGBaSolid);
+					break;
 				}
 			} catch (Exception ignored) {
 			}
@@ -162,22 +170,6 @@ public class ItemProspectMap extends ItemMap {
 		mapData.scale = 0;
 		mapData.dimension = par2World.provider.dimensionId;
 		mapData.markDirty();
-	}
-
-	@Override
-	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer player) {
-//		itemStackIn.setItemDamage(worldIn.getUniqueDataId(STR_ID));
-//		String mapName = STR_ID + "_" + itemStackIn.getItemDamage();
-//		ProspectMapData mapData = new ProspectMapData(mapName);
-//		worldIn.setItemData(mapName, mapData);
-//		mapData.xCenter = MathHelper.floor_double(player.posX);
-//		mapData.yCenter = MathHelper.floor_double(player.posY);
-//		mapData.zCenter = MathHelper.floor_double(player.posZ);
-//		mapData.scale = 0;
-//		mapData.dimension = worldIn.provider.dimensionId;
-//		mapData.markDirty();
-//		return itemStackIn;
-		return itemStackIn;
 	}
 
 	/**

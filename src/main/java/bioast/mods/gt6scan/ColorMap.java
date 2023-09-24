@@ -1,8 +1,8 @@
 package bioast.mods.gt6scan;
 
-import gregapi.data.MT;
-import gregapi.util.UT;
 import net.minecraft.block.material.MapColor;
+
+import java.awt.*;
 
 public class ColorMap {
 	public static final int airColor = 0;
@@ -42,7 +42,46 @@ public class ColorMap {
 	public static final int obsidianColor = 1381407;
 	public static final int netherrackColor = 7340544;
 
-	public static int[] cols = new int[]{airColor
+	private static final double[][] mapColors = new double[][]{
+			ColorUtility.getLab(new Color(airColor))
+			, ColorUtility.getLab(new Color(grassColor))
+			, ColorUtility.getLab(new Color(sandColor))
+			, ColorUtility.getLab(new Color(clothColor))
+			, ColorUtility.getLab(new Color(tntColor))
+			, ColorUtility.getLab(new Color(iceColor))
+			, ColorUtility.getLab(new Color(ironColor))
+			, ColorUtility.getLab(new Color(foliageColor))
+			, ColorUtility.getLab(new Color(snowColor))
+			, ColorUtility.getLab(new Color(clayColor))
+			, ColorUtility.getLab(new Color(dirtColor))
+			, ColorUtility.getLab(new Color(stoneColor))
+			, ColorUtility.getLab(new Color(waterColor))
+			, ColorUtility.getLab(new Color(woodColor))
+			, ColorUtility.getLab(new Color(quartzColor))
+			, ColorUtility.getLab(new Color(adobeColor))
+			, ColorUtility.getLab(new Color(magentaColor))
+			, ColorUtility.getLab(new Color(lightBlueColor))
+			, ColorUtility.getLab(new Color(yellowColor))
+			, ColorUtility.getLab(new Color(limeColor))
+			, ColorUtility.getLab(new Color(pinkColor))
+			, ColorUtility.getLab(new Color(grayColor))
+			, ColorUtility.getLab(new Color(silverColor))
+			, ColorUtility.getLab(new Color(cyanColor))
+			, ColorUtility.getLab(new Color(purpleColor))
+			, ColorUtility.getLab(new Color(blueColor))
+			, ColorUtility.getLab(new Color(brownColor))
+			, ColorUtility.getLab(new Color(greenColor))
+			, ColorUtility.getLab(new Color(redColor))
+			, ColorUtility.getLab(new Color(blackColor))
+			, ColorUtility.getLab(new Color(goldColor))
+			, ColorUtility.getLab(new Color(diamondColor))
+			, ColorUtility.getLab(new Color(lapisColor))
+			, ColorUtility.getLab(new Color(emeraldColor))
+			, ColorUtility.getLab(new Color(obsidianColor))
+			, ColorUtility.getLab(new Color(netherrackColor))
+	};
+	public static int[] cols = new int[]{
+			airColor
 			, grassColor
 			, sandColor
 			, clothColor
@@ -79,67 +118,22 @@ public class ColorMap {
 			, obsidianColor
 			, netherrackColor};
 
-	public static int findClosestColorTo(final int color) {
-		int closestColor = -1;
-		var closestDistance = Double.POSITIVE_INFINITY;
-		for (final int colorTarget : ColorMap.cols) {
-			if (colorTarget == ColorMap.magentaColor && (color == UT.Code.getRGBInt(MT.Lapis.mRGBaSolid) || color == UT.Code.getRGBInt(MT.BlueSapphire.mRGBaSolid)))
-				continue;
-			var h0 = getHue(colorTarget);
-			var h1 = getHue(color);
-			var v0 = getValue(colorTarget);
-			var v1 = getValue(color);
-			var s0 = getSaturation(colorTarget);
-			var s1 = getSaturation(color);
-			var dh = Math.min(Math.abs(h1 - h0), 360 - Math.abs(h1 - h0)) / 180.0;
-			var ds = Math.abs(s1 - s0);
-			var dv = Math.abs(v1 - v0) / 255.0;
-			final var distance = Math.sqrt(dh * dh + ds * ds + dv * dv);
+	public static MapColor asMinecraftMapColor(int color) {
+		Color ob = new Color(color);
+		double[] labOB = ColorUtility.getLab(ob);
+		int bestColorIndex = 0;
+		double closestDistance = Double.MAX_VALUE;
+		for (int i = 0; i < ColorMap.mapColors.length; i++) {
+			double[] c = mapColors[i];
+			double diffLinner = Math.abs(c[0] - labOB[0]);
+			double diffAinner = Math.abs(c[1] - labOB[1]);
+			double diffBinner = Math.abs(c[2] - labOB[2]);
+			double distance = diffLinner * diffLinner + diffAinner * diffAinner + diffBinner * diffBinner;
 			if (distance < closestDistance) {
 				closestDistance = distance;
-				closestColor = colorTarget;
+				bestColorIndex = i;
 			}
 		}
-		return closestColor;
-	}
-
-	public static int getHue(int argb) {
-		float r = UT.Code.getR(argb), g = UT.Code.getG(argb), b = UT.Code.getB(argb);
-		if (r == g && r == b) return 0;
-		float min = Math.min(r, Math.min(g, b));
-		if (r >= g && r >= b) {
-			return (int) (((g - b) / (r - min)) % 6) * 60;
-		}
-		if (g >= r && g >= b) {
-			return (int) (((b - r) / (g - min)) + 2) * 60;
-		}
-		if (b >= r && b >= g) {
-			return (int) (((r - g) / (b - min)) + 4) * 60;
-		}
-		return 0;
-	}
-
-
-	public static float getSaturation(int argb) {
-		float r = UT.Code.getR(argb), g = UT.Code.getG(argb), b = UT.Code.getB(argb);
-		float min = Math.min(r, Math.min(g, b));
-		float max = Math.max(r, Math.max(g, b));
-		return max == 0 ? 0 : (max - min) / max;
-	}
-
-	public static float getValue(int argb) {
-		float r = UT.Code.getR(argb), g = UT.Code.getG(argb), b = UT.Code.getB(argb);
-		return Math.max(r, Math.max(g, b));
-	}
-
-	public static MapColor asMinecraftMapColor(int color) {
-		color = findClosestColorTo(color);
-		for (int i = 0; i < cols.length; i++) {
-			if (color == cols[i]) {
-				if (MapColor.mapColorArray.length > i)
-					return MapColor.mapColorArray[i];
-			}
-		}
-		return MapColor.airColor;
+		return MapColor.mapColorArray[bestColorIndex];
 	}
 }
