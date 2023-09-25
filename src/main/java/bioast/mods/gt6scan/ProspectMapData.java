@@ -5,6 +5,7 @@ import net.minecraft.world.storage.MapData;
 
 public class ProspectMapData extends MapData {
 	public int yCenter;
+	public boolean coloredMode;
 
 	public ProspectMapData(String p_i2140_1_) {
 		super(p_i2140_1_);
@@ -15,6 +16,7 @@ public class ProspectMapData extends MapData {
 		super.readFromNBT(par1NBTTagCompound);
 
 		this.yCenter = par1NBTTagCompound.getInteger("yCenter");
+		this.coloredMode = par1NBTTagCompound.getBoolean("colorMode");
 	}
 
 	/**
@@ -25,6 +27,6 @@ public class ProspectMapData extends MapData {
 		super.writeToNBT(par1NBTTagCompound);
 
 		par1NBTTagCompound.setInteger("yCenter", this.yCenter);
-
+		par1NBTTagCompound.setBoolean("colorMode", this.coloredMode);
 	}
 }
