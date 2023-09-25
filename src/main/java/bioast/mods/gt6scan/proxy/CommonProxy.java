@@ -6,12 +6,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import gregapi.api.Abstract_Proxy;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public class CommonProxy extends Abstract_Proxy {
 
 	CommonProxy() {
-		//MinecraftForge.EVENT_BUS.register(this);
-
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	// preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the

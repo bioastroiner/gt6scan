@@ -39,7 +39,8 @@ public class ScannerMod extends Abstract_Mod {
     public static Config config;
     @SidedProxy(clientSide = "bioast.mods.gt6scan.proxy.ClientProxy", serverSide = "bioast.mods.gt6scan.proxy.CommonProxy")
     public static CommonProxy proxy;
-    public static Item mapWritten, mapEmpty;
+    public static ItemProspectMap mapWritten;
+    public static Item mapEmpty;
 
     @Override
     public String getModID() {
@@ -103,7 +104,7 @@ public class ScannerMod extends Abstract_Mod {
         proxy.preInit(aEvent);
         config = new Config(CS.DirectoriesGT.CONFIG_GT, "scanner.cfg");
         new ScannerMultiTool();
-        mapWritten = new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
+        mapWritten = (ItemProspectMap) new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
         mapEmpty = new ItemEmptyProspectMap().setUnlocalizedName("emptyProspectingMap").setMaxStackSize(1);
         GameRegistry.registerItem(mapWritten, mapWritten.getUnlocalizedName(), MODID);
         GameRegistry.registerItem(mapEmpty, mapEmpty.getUnlocalizedName(), MODID);
