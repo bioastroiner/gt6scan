@@ -64,8 +64,8 @@ dependencies {
 //    compileOnly "ic2:IC2Classic:1.2.1.8:dev"
 //    compileOnly "micdoodle8.mods:GalacticraftCore:1.7-3.0.12.504:Dev"
 //    compileOnly "micdoodle8.mods:MicdoodleCore:1.7-3.0.12.504:Dev"
-//    compileOnly "openblocks:OpenBlocks:1.7.10-1.6-1.7.10:deobf"
-//    compileOnly "openmods:OpenModsLib:1.7.10-0.10:deobf"
-//    compileOnly "vazkii.botania:Botania:r1.8-250:deobf"
-//    compileOnly "com.mod-buildcraft:buildcraft:7.1.23:dev"
+    compileOnly "openblocks:OpenBlocks:1.7.10-1.6-1.7.10:deobf"
+    compileOnly "openmods:OpenModsLib:1.7.10-0.10:deobf"
+    compileOnly "vazkii.botania:Botania:r1.8-250:deobf"
+    compileOnly "com.mod-buildcraft:buildcraft:7.1.23:dev"
 }
