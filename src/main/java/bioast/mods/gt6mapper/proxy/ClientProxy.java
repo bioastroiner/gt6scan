@@ -1,7 +1,7 @@
-package bioast.mods.gt6scan.proxy;
+package bioast.mods.gt6mapper.proxy;
 
-import bioast.mods.gt6scan.ItemProspectMap;
-import bioast.mods.gt6scan.ScannerMod;
+import bioast.mods.gt6mapper.item.ItemProspectMap;
+import bioast.mods.gt6mapper.MapperMod;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.Minecraft;
@@ -13,6 +13,10 @@ import net.minecraftforge.client.event.RenderItemInFrameEvent;
 import org.lwjgl.opengl.GL11;
 
 public class ClientProxy extends CommonProxy {
+
+    public ClientProxy(){
+        //ClientRegistry.bindTileEntitySpecialRenderer(CartographyTableTE.class, new CartographyTableRenderer());
+    }
 	@Override
 	public World getClientWorld() {
 		return FMLClientHandler.instance().getClient().theWorld;
@@ -20,7 +24,7 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public void onRenderItemFrame(RenderItemInFrameEvent event) {
-		if (event.item.getItem() == ScannerMod.mapWritten) {
+		if (event.item.getItem() == MapperMod.mapWritten) {
 			event.renderer.renderManager.renderEngine.bindTexture(new ResourceLocation("textures/map/map_background.png"));
 			Tessellator tessellator = Tessellator.instance;
 			GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
@@ -51,5 +55,4 @@ public class ClientProxy extends CommonProxy {
 			}
 		}
 	}
-
 }

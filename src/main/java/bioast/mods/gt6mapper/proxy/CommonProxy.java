@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan.proxy;
+package bioast.mods.gt6mapper.proxy;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -10,7 +10,7 @@ import net.minecraftforge.common.MinecraftForge;
 
 public class CommonProxy extends Abstract_Proxy {
 
-	CommonProxy() {
+	public CommonProxy() {
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 

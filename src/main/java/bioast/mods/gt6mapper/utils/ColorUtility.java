@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan;
+package bioast.mods.gt6mapper.utils;
 
 //  ****************************************************************************************
 
