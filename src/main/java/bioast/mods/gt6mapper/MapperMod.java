@@ -1,8 +1,9 @@
-package bioast.mods.gt6scan;
+package bioast.mods.gt6mapper;
 
-import bioast.mods.gt6scan.item.ScannerBehavior;
-import bioast.mods.gt6scan.item.ScannerMultiTool;
-import bioast.mods.gt6scan.proxy.CommonProxy;
+import bioast.mods.gt6mapper.item.ItemEmptyProspectMap;
+import bioast.mods.gt6mapper.item.ItemProspectMap;
+import bioast.mods.gt6mapper.network.MapPacketHandler;
+import bioast.mods.gt6mapper.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.*;
@@ -10,10 +11,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
-import gregapi.config.Config;
-import gregapi.data.CS;
-import gregapi.data.LH;
-import gregapi.data.OD;
+import gregapi.data.*;
+import gregapi.recipes.maps.RecipeMapPrinter;
 import gregapi.util.CR;
 import gregapi.util.ST;
 import net.minecraft.item.Item;
@@ -22,12 +21,12 @@ import net.minecraftforge.oredict.OreDictionary;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static bioast.mods.gt6scan.ScannerMod.*;
-import static gregapi.data.CS.W;
+import static bioast.mods.gt6mapper.MapperMod.*;
+import static gregapi.data.CS.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME, dependencies = DEPENDENCIES)
-public class ScannerMod extends Abstract_Mod {
-    public static final String DEPENDENCIES = "after:modularui@[2.0.6,);required-after:gregapi";
+public class MapperMod extends Abstract_Mod {
+    public static final String DEPENDENCIES = "";//"required-after:gregapi";
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
     public static final String VERSION = "GRADLETOKEN_VERSION";
@@ -35,9 +34,8 @@ public class ScannerMod extends Abstract_Mod {
 
     public static final Logger debug = LogManager.getLogger(MODID);
     public static gregapi.code.ModData MOD_DATA = new gregapi.code.ModData(MODID, MODNAME);
-    public static ScannerMod instance;
-    public static Config config;
-    @SidedProxy(clientSide = "bioast.mods.gt6scan.proxy.ClientProxy", serverSide = "bioast.mods.gt6scan.proxy.CommonProxy")
+    public static MapperMod instance;
+    @SidedProxy(clientSide = "bioast.mods.gt6mapper.proxy.ClientProxy", serverSide = "bioast.mods.gt6mapper.proxy.CommonProxy")
     public static CommonProxy proxy;
     public static ItemProspectMap mapWritten;
     public static Item mapEmpty;
@@ -102,8 +100,6 @@ public class ScannerMod extends Abstract_Mod {
     public void onModPreInit2(FMLPreInitializationEvent aEvent) {
         instance = this;
         proxy.preInit(aEvent);
-        config = new Config(CS.DirectoriesGT.CONFIG_GT, "scanner.cfg");
-        new ScannerMultiTool();
         mapWritten = (ItemProspectMap) new ItemProspectMap().setUnlocalizedName("prospectingMap").setMaxStackSize(1);
         mapEmpty = new ItemEmptyProspectMap().setUnlocalizedName("emptyProspectingMap").setMaxStackSize(1);
         GameRegistry.registerItem(mapWritten, mapWritten.getUnlocalizedName(), MODID);
@@ -111,6 +107,14 @@ public class ScannerMod extends Abstract_Mod {
         LH.add(mapWritten.getUnlocalizedName(), "Geographical Prospecting Map");
         LH.add(mapEmpty.getUnlocalizedName(), "Empty Geographical Prospecting Map");
         CR.shaped(ST.make(mapEmpty, 1, W), CR.DEF, "XXX", "XBX", "XXX", 'X', OreDictionary.getOres("paper"), 'B', OD.itemRock);
+        //RM.Printer.addFakeRecipe(F, ST.array(ST.make(mapEmpty, 1, W), IL.USB_Stick_1.getWithName(0, "Containing scanned Prospecting Map")), ST.array(ST.make(mapWritten, 1, W)), null, null, FL.array(FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Yellow], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Magenta], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Cyan], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Black], 1, 9, T)), ZL_FS, 64, 16, 0);
+        //RM.ScannerVisuals.addFakeRecipe(F, ST.array(ST.make(mapWritten, 1, W), IL.USB_Stick_1.get(1)), ST.array(IL.USB_Stick_1.getWithName(1, "Containing scanned Prospecting Map"), ST.make(mapWritten, 1, W)), null, null, ZL_FS, ZL_FS, 64, 16, 0);
+        // inject to gregapi.recipes.maps.RecipeMapPrinter.findRecipe some code to make recipes actually generate
+
+        /*
+        //GameRegistry.registerTileEntity(CartographyTableTE.class,"tileCartographyTable");
+        new MultiTileEntityRegistry("scanner.multitileentity");
+*/
     }
 
     @Override
@@ -120,10 +124,13 @@ public class ScannerMod extends Abstract_Mod {
 
         proxy.init(aEvent);
         NetworkRegistry.INSTANCE.newEventDrivenChannel(ItemProspectMap.STR_ID).register(new MapPacketHandler());
-
-        if (config.get("core", "useCheatTool", true)) {
-            CS.ItemsGT.TOOLS.addItemBehavior(9001, new ScannerBehavior());
-        }
+        /*
+        MultiTileEntityBlock aMachine = MultiTileEntityBlock.getOrCreate(MD.GT.mID, "machine"      , MaterialMachines.instance , Block.soundTypeMetal, TOOL_wrench , 0, 0, 15, F, F
+        );
+        MultiTileEntityRegistry.getRegistry("scanner.multitileentity")
+            .add("Cartography Table","Machines",0,0, MultiTileEntityCartographyTable.class,0,16,aMachine,
+                UT.NBT.make(CS.NBT_MATERIAL, MT.Steel));
+                */
     }
 
     @Override
