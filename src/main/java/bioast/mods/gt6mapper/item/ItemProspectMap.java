@@ -1,13 +1,19 @@
-package bioast.mods.gt6scan;
+package bioast.mods.gt6mapper.item;
 
+import bioast.mods.gt6mapper.network.MapPacketHandler;
+import bioast.mods.gt6mapper.MapperMod;
+import bioast.mods.gt6mapper.world.ProspectMapData;
+import bioast.mods.gt6mapper.utils.ColorMap;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
-import gregapi.data.OP;
+import gregapi.data.*;
 import gregapi.oredict.OreDictItemData;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.oredict.OreDictPrefix;
+import gregapi.recipes.Recipe;
 import gregapi.util.OM;
 import gregapi.util.ST;
 import gregapi.util.UT;
@@ -15,14 +21,18 @@ import net.minecraft.block.material.MapColor;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.Packet;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.MapData;
+
+import static gregapi.data.CS.*;
 
 public class ItemProspectMap extends ItemMap {
 	public static final String STR_ID = "prospectmap";
@@ -38,7 +48,42 @@ public class ItemProspectMap extends ItemMap {
 		return mapData;
 	}
 
-	private static int searchForTopBlockInVerticalColumn(Chunk chunk, int x, int z, boolean inColor) {
+    public static ItemStack getUSBFilled(ItemStack thisMap){
+        ItemStack usb_written = ST.amount(0,IL.USB_Stick_1.get(1));
+        UT.NBT.set(usb_written,UT.NBT.make());
+        usb_written.getTagCompound().setTag(NBT_USB_DATA, UT.NBT.make("prospect_map_id",thisMap.getItemDamage()));
+        return usb_written;
+    }
+
+    private static void searchOresAndPutThemIntoMapForData(Chunk chunk,int x, int z,ProspectMapData data){
+        int y;
+        for (int i = chunk.worldObj.getHeightValue(x, z); i >= 0; i--){
+            y=i;OreDictItemData dataItem = OM.anyassociation(ST.make(chunk.getBlock(x & 15, y, z & 15), 1, chunk.getBlockMetadata(x & 15, y, z & 15)));
+            TileEntity tile = chunk.getTileEntityUnsafe(x & 15, y, z & 15);OreDictPrefix prefix;OreDictMaterial material;
+            if(tile instanceof PrefixBlockTileEntity){
+                PrefixBlockTileEntity prefixBlockTileEntity = (PrefixBlockTileEntity) tile;
+                PrefixBlock prefixBlock = (PrefixBlock) prefixBlockTileEntity.getBlock(x, y, z);
+                prefix = prefixBlock.mPrefix;
+                material = OreDictMaterial.MATERIAL_ARRAY[prefixBlockTileEntity.mMetaData];
+            } else if(dataItem != null) {
+                material = dataItem.mMaterial.mMaterial;
+                prefix = dataItem.mPrefix;
+            } else {
+                continue;
+            }
+            if (prefix.mFamiliarPrefixes.contains(OP.ore)) {
+                data.put(material.mID, 0);
+            }
+            else if (prefix.mFamiliarPrefixes.contains(OP.oreSmall)) {
+                data.put(material.mID,1);
+            }
+            else if (prefix.mFamiliarPrefixes.contains(OP.oreDense)) {
+                data.put(material.mID,2);
+            }
+        }
+    }
+
+	private static int searchForTopBlockInVerticalColumn(Chunk chunk, int x, int z) {
 		int y;
 		int color = 0;
 		boolean oreFound = false;
@@ -64,7 +109,6 @@ public class ItemProspectMap extends ItemMap {
 			} catch (Exception ignored) {
 			}
 		}
-		if (!inColor && oreFound) return MapColor.blackColor.colorIndex;
 		// color was found now we try to find the most similar map color to it and return its index
 		return ColorMap.asMinecraftMapColor(color).colorIndex;
 	}
@@ -115,7 +159,9 @@ public class ItemProspectMap extends ItemMap {
 							int z = zDraw2;
 							Chunk chunk = worldIn.getChunkFromBlockCoords(xDraw2, zDraw2);
 							if (!chunk.isEmpty()) {
-								int colorIndex = searchForTopBlockInVerticalColumn(chunk, x, z, mapDataIn.coloredMode);
+								int colorIndex = searchForTopBlockInVerticalColumn(chunk, x, z);
+                                // for storing Ore Info inside Map for Data Processing
+                                searchOresAndPutThemIntoMapForData(chunk,x,z,mapDataIn);
 								// set background so its not transparent
 								// in case a mat has background as color change it
 								if (colorIndex == 2) colorIndex = (byte) 30;
@@ -143,20 +189,32 @@ public class ItemProspectMap extends ItemMap {
 	}
 
 	@Override
-	public void onCreated(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
-		par1ItemStack.setItemDamage(par2World.getUniqueDataId(STR_ID));
-		String mapName = STR_ID + "_" + par1ItemStack.getItemDamage();
-		ProspectMapData mapData = new ProspectMapData(mapName);
-		par2World.setItemData(mapName, mapData);
-		mapData.xCenter = MathHelper.floor_double(par3EntityPlayer.posX);
-		mapData.yCenter = MathHelper.floor_double(par3EntityPlayer.posY);
-		mapData.zCenter = MathHelper.floor_double(par3EntityPlayer.posZ);
-		mapData.scale = 0;
-		mapData.dimension = par2World.provider.dimensionId;
-		mapData.markDirty();
-	}
+	public void onCreated(ItemStack WrittenMapStack, World par2World, EntityPlayer par3EntityPlayer) {
+		WrittenMapStack.setItemDamage(par2World.getUniqueDataId(STR_ID));
+//		String mapName = STR_ID + "_" + WrittenMapStack.getItemDamage();
+//		ProspectMapData mapData = new ProspectMapData(mapName);
+//		par2World.setItemData(mapName, mapData);
+//		mapData.xCenter = MathHelper.floor_double(par3EntityPlayer.posX);
+//		mapData.zCenter = MathHelper.floor_double(par3EntityPlayer.posZ);
+//		mapData.scale = 0;
+//		mapData.dimension = par2World.provider.dimensionId;
+//		mapData.markDirty();
+        registerGTRecipes(WrittenMapStack);
+    }
 
-	@Override
+    private static void registerGTRecipes(ItemStack WrittenMapStack) {
+        ItemStack usb_written = getUSBFilled(WrittenMapStack);
+        RM.ScannerVisuals.add(new Recipe(F, F, F,
+            ST.array(WrittenMapStack, IL.USB_Stick_1.get(1)),
+            ST.array(usb_written, WrittenMapStack),
+            null, null, null, null, 64, 16, 0));
+        RM.Printer.addRecipe(new Recipe(F, F, F,
+            ST.array(ST.make(MapperMod.mapEmpty,1,W), usb_written),
+            ST.array(WrittenMapStack),
+            null, null, FL.array(FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Black], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Cyan], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Magenta], 1, 9, T), FL.mul(DYE_FLUIDS_CHEMICAL[DYE_INDEX_Yellow], 1, 9, T)), null, 64, 16, 0));
+    }
+
+    @Override
 	public Packet func_150911_c(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
 		//System.out.println("yCenter = " + this.getMapData(par1ItemStack, par2World).yCenter);
 		byte[] mapBytes = this.getMapData(par1ItemStack, par2World).getUpdatePacketData(par1ItemStack, par2World, par3EntityPlayer);
@@ -174,13 +232,13 @@ public class ItemProspectMap extends ItemMap {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IIconRegister par1IconRegister) {
-		this.itemIcon = par1IconRegister.registerIcon(ScannerMod.MODID + ":" + this.getUnlocalizedName().substring(5));
+		this.itemIcon = par1IconRegister.registerIcon(MapperMod.MODID + ":" + this.getUnlocalizedName().substring(5));
 	}
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer player) {
-		if (!player.isSneaking()) toggleSize(itemStackIn, worldIn);
-		if (player.isSneaking()) toggleColor(itemStackIn, worldIn);
+		//if (!player.isSneaking()) toggleSize(itemStackIn, worldIn);
+		//if (player.isSneaking()) toggleColor(itemStackIn, worldIn);
 		return super.onItemRightClick(itemStackIn, worldIn, player);
 	}
 
@@ -192,8 +250,9 @@ public class ItemProspectMap extends ItemMap {
 		}
 	}
 
+    // TODO: move this exclsively to Client Side
 	public void toggleColor(ItemStack itemStackIn, World worldIn) {
-		getMapData(itemStackIn, worldIn).coloredMode = !getMapData(itemStackIn, worldIn).coloredMode;
+		//getMapData(itemStackIn, worldIn).coloredMode = !getMapData(itemStackIn, worldIn).coloredMode;
 //		for (int i = 0; i < getMapData(itemStackIn, worldIn).colors.length; i++) {
 //			if (getMapData(itemStackIn, worldIn).colors[i] != 0) {
 //				getMapData(itemStackIn, worldIn).colors[i] = (byte) (MapColor.obsidianColor.colorIndex * 4);

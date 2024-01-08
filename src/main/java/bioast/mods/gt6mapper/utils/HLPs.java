@@ -1,6 +1,6 @@
-package bioast.mods.gt6scan.utils;
+package bioast.mods.gt6mapper.utils;
 
-import bioast.mods.gt6scan.ScannerMod;
+import bioast.mods.gt6mapper.MapperMod;
 import gregapi.block.prefixblock.PrefixBlock;
 import gregapi.block.prefixblock.PrefixBlockTileEntity;
 import gregapi.data.OP;
@@ -44,7 +44,7 @@ public class HLPs {
             World tWorld = aTile.getWorldObj();
             tBlock = (PrefixBlock) tWorld.getBlock(tTile.xCoord, tTile.yCoord, tTile.zCoord);
         } catch (Exception e){
-            ScannerMod.debug.error("Not a PrefixBlock");
+            MapperMod.debug.error("Not a PrefixBlock");
         }
     return tBlock;
     }

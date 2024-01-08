@@ -1,5 +1,8 @@
-package bioast.mods.gt6scan;
+package bioast.mods.gt6mapper.network;
 
+import bioast.mods.gt6mapper.MapperMod;
+import bioast.mods.gt6mapper.item.ItemProspectMap;
+import bioast.mods.gt6mapper.world.ProspectMapData;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
@@ -64,7 +67,7 @@ public class MapPacketHandler {
 			//System.out.println("Incoming maze map packet detected!");
 
 			S34PacketMaps mapPacket = readMapPacket(event.packet.payload());
-			ProspectMapData data = ItemProspectMap.getMPMapData(mapPacket.func_149188_c(), ScannerMod.proxy.getClientWorld());
+			ProspectMapData data = ItemProspectMap.getMPMapData(mapPacket.func_149188_c(), MapperMod.proxy.getClientWorld());
 			data.updateMPMapData(mapPacket.func_149187_d());
 			// FIXME: NullPointerException
 			Minecraft.getMinecraft().entityRenderer.getMapItemRenderer().func_148246_a(data);
