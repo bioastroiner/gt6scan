@@ -9,7 +9,7 @@ import net.minecraft.world.World;
 
 public class CommonProxy extends Abstract_Proxy {
 
-	CommonProxy() {
+	public CommonProxy() {
 		//MinecraftForge.EVENT_BUS.register(this);
 
 	}
