@@ -1,6 +1,7 @@
 package bioast.mods.gt6scan.network;
 
-import com.cleanroommc.modularui.api.sync.ValueSyncHandler;
+
+import com.cleanroommc.modularui.value.sync.ValueSyncHandler;
 import net.minecraft.network.PacketBuffer;
 
 import java.util.ArrayList;
@@ -22,9 +23,13 @@ public class OreDataSyncHandler extends ValueSyncHandler<List<OreData>> {
         this.size = cache.size();
     }
 
+    public List<OreData> getCache() {
+        return cache;
+    }
+
     @Override
-    public List<OreData> getCachedValue() {
-        return this.cache;
+    public List<OreData> getValue() {
+        return this.getter.get();
     }
 
     @Override
@@ -33,12 +38,18 @@ public class OreDataSyncHandler extends ValueSyncHandler<List<OreData>> {
     }
 
     @Override
-    public boolean needsSync(boolean isFirstSync) {
+    public void setValue(List<OreData> value, boolean setSource, boolean sync) {
+        this.setter.accept(value);
+        syncToServer(0, this::write);
+    }
+
+    @Override
+    public boolean updateCacheFromSource(boolean isFirstSync) {
         return isFirstSync || this.cache != this.getter.get();
     }
 
     @Override
-    public void updateAndWrite(PacketBuffer buffer) {
+    public void write(PacketBuffer buffer) {
         setValue(this.getter.get());
         buffer.writeInt(cache.size());
         for (OreData data : cache) {
@@ -58,12 +69,6 @@ public class OreDataSyncHandler extends ValueSyncHandler<List<OreData>> {
             this.cache.add(data);
         }
         setValue(this.cache);
-        this.setter.accept(getCachedValue());
-    }
-
-    @Override
-    public void updateFromClient(List<OreData> value) {
-        this.setter.accept(value);
-        syncToServer(0, this::updateAndWrite);
+        this.setter.accept(getCache());
     }
 }
