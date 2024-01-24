@@ -22,10 +22,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
     public ItemStack onItemRightClick(MultiItem aItem, ItemStack aStack, World aWorld, EntityPlayer aPlayer) {
         ScanMode mode = getMode(aStack);
         if (!aPlayer.isSneaking()) {
-            if (!UT.Entities.isCreative(aPlayer) && mode != ScanMode.NONE) {
-                if (aItem.getEnergyStored(TD.Energy.EU, aStack) < CS.V[6]) return aStack;
-                else if (!aWorld.isRemote)
-                    aItem.useEnergy(TD.Energy.LU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
+            if (mode != ScanMode.NONE) {
+                if (!UT.Entities.isCreative(aPlayer)) {
+                    if (aItem.getEnergyStored(TD.Energy.EU, aStack) < CS.V[6]) return aStack;
+                    else if (!aWorld.isRemote)
+                        aItem.useEnergy(TD.Energy.LU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
+                }
                 if (aWorld.isRemote) {
                     ScanRequestToServer req = new ScanRequestToServer(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
                     CommonProxy.simpleNetworkWrapper.sendToServer(req);
