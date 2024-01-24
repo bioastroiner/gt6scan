@@ -1,7 +1,9 @@
 package bioast.mods.gt6scan.proxy;
 
 import bioast.mods.gt6scan.network.ScanMessageHandlerOnServer;
+import bioast.mods.gt6scan.network.ScanMessageHandlerOnServerDummy;
 import bioast.mods.gt6scan.network.ScanRequestToServer;
+import bioast.mods.gt6scan.network.ScanResponceToClient;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -26,6 +28,8 @@ public class CommonProxy extends Abstract_Proxy {
 	public void preInit(FMLPreInitializationEvent event) {
 		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("Scanning_channel");
 		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServer.class, ScanRequestToServer.class, 1, Side.SERVER);
+		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServerDummy.class, ScanResponceToClient.class,
+				2, Side.SERVER);
 	}
 
 	// load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)

@@ -16,7 +16,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
 		super.preInit(event);
-
 		CommonProxy.simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnClient.class, ScanResponceToClient.class,
 				2, Side.CLIENT);
 	}
