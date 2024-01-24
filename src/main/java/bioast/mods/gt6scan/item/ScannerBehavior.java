@@ -1,5 +1,6 @@
 package bioast.mods.gt6scan.item;
 
+import bioast.mods.gt6scan.network.ScanMode;
 import bioast.mods.gt6scan.network.ScanRequestToServer;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import gregapi.item.multiitem.MultiItem;

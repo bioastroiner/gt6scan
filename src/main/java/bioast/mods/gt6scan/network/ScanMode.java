@@ -1,4 +1,4 @@
-package bioast.mods.gt6scan.item;
+package bioast.mods.gt6scan.network;
 
 import gregapi.oredict.OreDictPrefix;
 

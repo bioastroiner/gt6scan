@@ -1,6 +1,5 @@
 package bioast.mods.gt6scan.network;
 
-import bioast.mods.gt6scan.item.ScanMode;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.command.CommandBase;

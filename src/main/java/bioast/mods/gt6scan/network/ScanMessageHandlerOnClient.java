@@ -1,6 +1,5 @@
 package bioast.mods.gt6scan.network;
 
-import bioast.mods.gt6scan.item.ScanMode;
 import com.cleanroommc.modularui.api.IGuiHolder;
 import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;

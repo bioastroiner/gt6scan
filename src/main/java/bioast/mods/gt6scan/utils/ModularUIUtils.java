@@ -1,6 +1,6 @@
 package bioast.mods.gt6scan.utils;
 
-import bioast.mods.gt6scan.item.ScanMode;
+import bioast.mods.gt6scan.network.ScanMode;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.ItemDrawable;
 import gregapi.data.FL;

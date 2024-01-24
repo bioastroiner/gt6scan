@@ -1,6 +1,5 @@
 package bioast.mods.gt6scan.network;
 
-import bioast.mods.gt6scan.item.ScanMode;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
