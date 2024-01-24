@@ -14,6 +14,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import gregapi.api.Abstract_Proxy;
+import gregapi.data.LH;
+import gregapi.util.UT;
 import net.minecraft.world.World;
 
 public class CommonProxy extends Abstract_Proxy {
@@ -58,8 +60,9 @@ public class CommonProxy extends Abstract_Proxy {
 
     @SubscribeEvent
     public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
-//		UT.Entities.sendchat(event.player,String.format(
-//				"To Use the Scanner For GT6 ores"
-//		));
+        UT.Entities.sendchat(event.player, String.format(
+            LH.Chat.PURPLE + "To Use the ScannerMod For GT6, You Must have ModularUI2 version 2.0.8 on your client.\n" + LH.Chat.GRAY +
+                "in addition to scanner tool, you can also use command /scan [MODE] to use the GUI (experimental)"
+        ));
     }
 }

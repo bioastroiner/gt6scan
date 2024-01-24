@@ -18,6 +18,7 @@ import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.data.CS;
 import gregapi.data.MT;
 import gregapi.oredict.OreDictMaterial;
@@ -38,6 +39,7 @@ import static bioast.mods.gt6scan.utils.HLPs.col;
 import static bioast.mods.gt6scan.utils.ModularUIUtils.wItem;
 import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
 
+@SideOnly(Side.CLIENT)
 public class ScanMessageHandlerOnClient implements IMessageHandler<ScanResponceToClient, IMessage>, IGuiHolder {
 	int chunkSize = 9;
 	int x_origin;

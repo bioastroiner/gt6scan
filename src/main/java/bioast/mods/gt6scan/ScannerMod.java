@@ -19,7 +19,7 @@ import static bioast.mods.gt6scan.ScannerMod.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME,dependencies = DEPENDENCIES)
 public class ScannerMod extends Abstract_Mod {
-    public static final String DEPENDENCIES = "required-after:modularui@[2.0.8-1.7.10];after:gregapi";
+    public static final String DEPENDENCIES = "after:modularui@[2.0.8-1.7.10];required-after:gregapi";
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
     public static final String VERSION = "GRADLETOKEN_VERSION";
