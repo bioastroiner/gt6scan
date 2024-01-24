@@ -7,6 +7,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.util.ChatComponentText;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ScanCommand extends CommandBase {
 	@Override
 	public String getCommandName() {
@@ -40,4 +43,12 @@ public class ScanCommand extends CommandBase {
 		}
 
 	}
+
+    @Override
+    public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+        if (args.length > 1) {
+            return getListOfStringsMatchingLastWord(args, Arrays.toString(ScanMode.values()));
+        }
+        return super.addTabCompletionOptions(sender, args);
+    }
 }
