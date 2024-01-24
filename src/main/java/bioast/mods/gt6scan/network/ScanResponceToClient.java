@@ -1,7 +1,6 @@
 package bioast.mods.gt6scan.network;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import io.netty.buffer.AbstractByteBuf;
 import io.netty.buffer.ByteBuf;
 
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ public class ScanResponceToClient implements IMessage {
         x = buf.readInt();
         z = buf.readInt();
         int size = buf.readInt();
+        mode = buf.readInt();
         for (int i = 0; i < size; i++) {
             scannedOres.add(BuffUtil.readOreData(buf));
         }
@@ -35,13 +35,10 @@ public class ScanResponceToClient implements IMessage {
 
     @Override
     public void toBytes(ByteBuf buf) {
-        int size;
-        if (buf instanceof AbstractByteBuf buffer) {
-            size = buffer.maxCapacity();
-        }
         buf.writeInt(x);
         buf.writeInt(z);
         buf.writeInt(scannedOres.size());
+        buf.writeInt(mode);
         for (OreData ore : scannedOres) {
             BuffUtil.writeOreData(buf, ore);
         }

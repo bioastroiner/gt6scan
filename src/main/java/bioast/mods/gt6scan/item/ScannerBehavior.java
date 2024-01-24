@@ -26,13 +26,12 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
                 if (aItem.getEnergyStored(TD.Energy.EU, aStack) < CS.V[6]) return aStack;
                 else if (!aWorld.isRemote)
                     aItem.useEnergy(TD.Energy.LU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
-            }
-            if (aWorld.isRemote) {
-                ScanRequestToServer req = new ScanRequestToServer(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
-                CommonProxy.simpleNetworkWrapper.sendToServer(req);
+                if (aWorld.isRemote) {
+                    ScanRequestToServer req = new ScanRequestToServer(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
+                    CommonProxy.simpleNetworkWrapper.sendToServer(req);
+                }
             }
         } else {
-            UT.Entities.sendchat(aPlayer, Chat.GOLD + "Changed The Mode to " + Chat.PURPLE + mode);
             return changeMode(aPlayer, aStack, mode);
         }
         return super.onItemRightClick(aItem, aStack, aWorld, aPlayer);
@@ -56,7 +55,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
             currentMode = ScanMode.NONE;
         }
         UT.NBT.makeInt(UT.NBT.getNBT(aStack), "mode", currentMode.ordinal());
-        UT.Entities.sendchat(aPlayer, "Mode: " + currentMode.name());
+        UT.Entities.sendchat(aPlayer, Chat.GOLD + "Changed The Mode to " + Chat.PURPLE + currentMode);
         return aStack;
     }
 

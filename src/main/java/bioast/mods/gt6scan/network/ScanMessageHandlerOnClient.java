@@ -57,6 +57,7 @@ public class ScanMessageHandlerOnClient implements IMessageHandler<ScanResponceT
 		scannedOres = message.scannedOres;
 		x_origin = message.x;
 		z_origin = message.z;
+        mode = ScanMode.values()[message.mode];
 		refresh();
 		GuiInfo.builder().clientGui(this::createScreen).commonGui((creationContext, syncManager) -> buildUI(creationContext, syncManager, true))
 				.build().open(minecraft.thePlayer);
