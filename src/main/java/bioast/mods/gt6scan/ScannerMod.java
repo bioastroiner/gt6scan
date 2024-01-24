@@ -2,6 +2,7 @@ package bioast.mods.gt6scan;
 
 import bioast.mods.gt6scan.item.ScannerBehavior;
 import bioast.mods.gt6scan.item.ScannerMultiTool;
+import bioast.mods.gt6scan.network.ScanCommand;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -11,7 +12,6 @@ import gregapi.api.Abstract_Proxy;
 import gregapi.config.Config;
 import gregapi.data.CS;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,7 +19,7 @@ import static bioast.mods.gt6scan.ScannerMod.*;
 
 @Mod(modid = MODID, version = VERSION, name = MODNAME,dependencies = DEPENDENCIES)
 public class ScannerMod extends Abstract_Mod {
-    public static final String DEPENDENCIES = "required-after:modularui@[2.0.6,);after:gregapi";
+    public static final String DEPENDENCIES = "after:modularui@[2.0.8-1.7.10];required-after:gregapi";
     public static final String MODID = "GRADLETOKEN_MODID";
     public static final String MODNAME = "GRADLETOKEN_MODNAME";
     public static final String VERSION = "GRADLETOKEN_VERSION";
@@ -70,6 +70,7 @@ public class ScannerMod extends Abstract_Mod {
 
     @cpw.mods.fml.common.Mod.EventHandler
     public final void onServerStarting(cpw.mods.fml.common.event.FMLServerStartingEvent aEvent) {
+        aEvent.registerServerCommand(new ScanCommand());
         onModServerStarting(aEvent);
     }
 

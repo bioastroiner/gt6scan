@@ -1,22 +1,39 @@
 package bioast.mods.gt6scan.proxy;
 
+import bioast.mods.gt6scan.network.ScanMessageHandlerOnServer;
+import bioast.mods.gt6scan.network.ScanMessageHandlerOnServerDummy;
+import bioast.mods.gt6scan.network.ScanRequestToServer;
+import bioast.mods.gt6scan.network.ScanResponceToClient;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import cpw.mods.fml.relauncher.Side;
 import gregapi.api.Abstract_Proxy;
+import gregapi.data.LH;
+import gregapi.util.UT;
 import net.minecraft.world.World;
 
 public class CommonProxy extends Abstract_Proxy {
+	public static SimpleNetworkWrapper simpleNetworkWrapper;
 
-	CommonProxy() {
+	public CommonProxy() {
 		//MinecraftForge.EVENT_BUS.register(this);
+
 
 	}
 
 	// preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
 	// GameRegistry." (Remove if not needed)
 	public void preInit(FMLPreInitializationEvent event) {
+		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("Scanning_channel");
+		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServer.class, ScanRequestToServer.class, 1, Side.SERVER);
+		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServerDummy.class, ScanResponceToClient.class,
+				2, Side.SERVER);
 	}
 
 	// load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
@@ -40,4 +57,12 @@ public class CommonProxy extends Abstract_Proxy {
 //        if (aEvent.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK) {
 //        }
 //    }
+
+    @SubscribeEvent
+    public void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        UT.Entities.sendchat(event.player, String.format(
+            LH.Chat.PURPLE + "To Use the ScannerMod For GT6, You Must have ModularUI2 version 2.0.8 on your client.\n" + LH.Chat.GRAY
+            //+     "in addition to scanner tool, you can also use command /scan [MODE] to use the GUI (experimental)"
+        ));
+    }
 }
