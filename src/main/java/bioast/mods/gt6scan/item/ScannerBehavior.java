@@ -26,7 +26,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
                 if (!UT.Entities.isCreative(aPlayer)) {
                     if (aItem.getEnergyStored(TD.Energy.EU, aStack) < CS.V[6]) return aStack;
                     else if (!aWorld.isRemote)
-                        aItem.useEnergy(TD.Energy.LU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
+                        aItem.useEnergy(TD.Energy.EU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
                 }
                 if (aWorld.isRemote) {
                     ScanRequestToServer req = new ScanRequestToServer(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
