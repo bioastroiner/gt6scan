@@ -150,7 +150,6 @@ public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestTo
                                         String fluidName = ((IFluidBlock) block1).getFluid().getName();
                                         matID = MT.Air.mID;
                                         if (fluidName.contains("natural")) matID = MT.MethaneIce.mID;
-
                                         if (fluidName.contains("oil")) matID = MT.Oil.mID;
                                         if (fluidName.contains("honey")) matID = MT.Honey.mID;
                                         if (fluidName.contains("sulfuric")) matID = MT.H2SO4.mID;
@@ -160,6 +159,7 @@ public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestTo
                                         if (fluidName.contains("mana")) matID = MT.Magic.mID;
                                         if (block1 == CS.BlocksGT.WaterGeothermal) matID = MT.DistWater.mID;
                                         if (fluidName.contains("water")) {
+                                            if (matID != MT.Air.mID) break;
                                             matID = MT.Water.mID;
                                             scannedOres.add(new OreData(x, y, z, matID));
                                             oresFound++;
