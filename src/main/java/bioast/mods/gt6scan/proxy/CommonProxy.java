@@ -1,9 +1,9 @@
 package bioast.mods.gt6scan.proxy;
 
-import bioast.mods.gt6scan.network.ScanMessageHandlerOnServer;
-import bioast.mods.gt6scan.network.ScanMessageHandlerOnServerDummy;
-import bioast.mods.gt6scan.network.ScanRequestToServer;
-import bioast.mods.gt6scan.network.ScanResponceToClient;
+import bioast.mods.gt6scan.network.scanmessage.HandlerDummy;
+import bioast.mods.gt6scan.network.scanmessage.HandlerServer;
+import bioast.mods.gt6scan.network.scanmessage.ScanRequest;
+import bioast.mods.gt6scan.network.scanmessage.ScanResponse;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -19,38 +19,38 @@ import gregapi.util.UT;
 import net.minecraft.world.World;
 
 public class CommonProxy extends Abstract_Proxy {
-	public static SimpleNetworkWrapper simpleNetworkWrapper;
+    public static SimpleNetworkWrapper simpleNetworkWrapper;
 
-	public CommonProxy() {
-		//MinecraftForge.EVENT_BUS.register(this);
+    public CommonProxy() {
+        //MinecraftForge.EVENT_BUS.register(this);
 
 
-	}
+    }
 
-	// preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
-	// GameRegistry." (Remove if not needed)
-	public void preInit(FMLPreInitializationEvent event) {
-		simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("Scanning_channel");
-		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServer.class, ScanRequestToServer.class, 1, Side.SERVER);
-		simpleNetworkWrapper.registerMessage(ScanMessageHandlerOnServerDummy.class, ScanResponceToClient.class,
-				2, Side.SERVER);
-	}
+    // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
+    // GameRegistry." (Remove if not needed)
+    public void preInit(FMLPreInitializationEvent event) {
+        simpleNetworkWrapper = NetworkRegistry.INSTANCE.newSimpleChannel("Scanning_channel");
+        simpleNetworkWrapper.registerMessage(HandlerServer.class, ScanRequest.class, 1, Side.SERVER);
+        simpleNetworkWrapper.registerMessage(HandlerDummy.class, ScanResponse.class,
+            2, Side.SERVER);
+    }
 
-	// load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
-	public void init(FMLInitializationEvent event) {
-	}
+    // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
+    public void init(FMLInitializationEvent event) {
+    }
 
-	// postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
-	public void postInit(FMLPostInitializationEvent event) {
-	}
+    // postInit "Handle interaction with other mods, complete your setup based on this." (Remove if not needed)
+    public void postInit(FMLPostInitializationEvent event) {
+    }
 
-	// register server commands in this event handler (Remove if not needed)
-	public void serverStarting(FMLServerStartingEvent event) {
-	}
+    // register server commands in this event handler (Remove if not needed)
+    public void serverStarting(FMLServerStartingEvent event) {
+    }
 
-	public World getClientWorld() {
-		return null;
-	}
+    public World getClientWorld() {
+        return null;
+    }
 
 //    @SubscribeEvent
 //    public void onPlayerUseEvent(PlayerInteractEvent aEvent) {

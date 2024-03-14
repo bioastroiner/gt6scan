@@ -1,5 +1,7 @@
-package bioast.mods.gt6scan.network;
+package bioast.mods.gt6scan.network.scanmessage;
 
+import bioast.mods.gt6scan.network.OreData;
+import bioast.mods.gt6scan.network.ScanMode;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
@@ -29,40 +31,27 @@ import java.util.Map;
 
 import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
 
-public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestToServer, ScanResponceToClient> {
-    List<OreData> scannedOres = new ArrayList<>();
+public class HandlerServer implements IMessageHandler<ScanRequest, ScanResponse> {
     //Map<Short, Integer> sortedOres = new HashMap<>();
-    int chunkSize = 9;
+    final int chunkSize = 9;
+    List<OreData> scannedOres = new ArrayList<>();
     int oresFound = 0;
     int x_origin;
     int z_origin;
 
-    public static Chunk[][] getChunksAroundLoc(World aWorld, int posX, int posZ, int chunkSize) {
-        Chunk[][] chunks = new Chunk[chunkSize][chunkSize];
-        final int CENTER_CHUNK_INDEX = (chunkSize - 1) / 2;
-        chunks[CENTER_CHUNK_INDEX][CENTER_CHUNK_INDEX] = aWorld.getChunkFromBlockCoords(posX, posZ);
-        final Chunk PLAYER_CHUNK = chunks[CENTER_CHUNK_INDEX][CENTER_CHUNK_INDEX];
-        chunks[0][0] = aWorld.getChunkFromChunkCoords(PLAYER_CHUNK.xPosition - ((chunkSize - 1) / 2), PLAYER_CHUNK.zPosition - ((chunkSize - 1) / 2));
-        for (int i = 0; i < chunkSize; i++) {
-            for (int j = 0; j < chunkSize; j++) {
-                if (i == 0 && j == 0) continue;
-                if (i == CENTER_CHUNK_INDEX && j == CENTER_CHUNK_INDEX) continue;
-                chunks[i][j] = aWorld.getChunkFromChunkCoords(chunks[0][0].xPosition + i, chunks[0][0].zPosition + j);
-            }
-        }
-        return chunks;
-    }
-
     @Override
-    public ScanResponceToClient onMessage(ScanRequestToServer message, MessageContext ctx) {
+    public ScanResponse onMessage(ScanRequest message, MessageContext ctx) {
         if (ctx.side != Side.SERVER) {
             return null;
         }
 
         // Do the Scanning Logic over here and send it as a response to Client
-        processMessage(ScanMode.values()[message.mode], ctx.getServerHandler().playerEntity.getEntityWorld(), message.x, message.z);
+        processMessage(ScanMode.values()[message.mode],
+            ctx.getServerHandler().playerEntity.getEntityWorld(),
+            message.x,
+            message.z);
 
-        return new ScanResponceToClient(scannedOres, x_origin, z_origin, message.mode);
+        return new ScanResponse(scannedOres, x_origin, z_origin, message.mode);
     }
 
     private void processMessage(ScanMode mode, World aWorld, int xo, int zo) {
@@ -94,12 +83,16 @@ public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestTo
                                         // so we skip the lower y levels for dense ores
                                         break;
                                     } else if (block1 instanceof BlockCrystalOres) {
-                                        matID = BlockCrystalOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k, m, l)].mID;
+                                        matID = BlockCrystalOres.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k,
+                                            m,
+                                            l)].mID;
                                         oresFound++;
                                         scannedOres.add(new OreData(x, y, z, matID));
                                         //break;
                                     } else if (block1 instanceof BlockVanillaOresA) {
-                                        matID = BlockVanillaOresA.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k, m, l)].mID;
+                                        matID = BlockVanillaOresA.ORE_MATERIALS[chunks[i][j].getBlockMetadata(k,
+                                            m,
+                                            l)].mID;
                                         oresFound++;
                                         scannedOres.add(new OreData(x, y, z, matID));
                                         //break;
@@ -199,6 +192,23 @@ public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestTo
         }
     }
 
+    public static Chunk[][] getChunksAroundLoc(World aWorld, int posX, int posZ, int chunkSize) {
+        Chunk[][] chunks = new Chunk[chunkSize][chunkSize];
+        final int CENTER_CHUNK_INDEX = (chunkSize - 1) / 2;
+        chunks[CENTER_CHUNK_INDEX][CENTER_CHUNK_INDEX] = aWorld.getChunkFromBlockCoords(posX, posZ);
+        final Chunk PLAYER_CHUNK = chunks[CENTER_CHUNK_INDEX][CENTER_CHUNK_INDEX];
+        chunks[0][0] = aWorld.getChunkFromChunkCoords(PLAYER_CHUNK.xPosition - ((chunkSize - 1) / 2),
+            PLAYER_CHUNK.zPosition - ((chunkSize - 1) / 2));
+        for (int i = 0; i < chunkSize; i++) {
+            for (int j = 0; j < chunkSize; j++) {
+                if (i == 0 && j == 0) continue;
+                if (i == CENTER_CHUNK_INDEX && j == CENTER_CHUNK_INDEX) continue;
+                chunks[i][j] = aWorld.getChunkFromChunkCoords(chunks[0][0].xPosition + i, chunks[0][0].zPosition + j);
+            }
+        }
+        return chunks;
+    }
+
     private void findTileEntityBlocks(Chunk chunk, ScanMode mode) {
         var tMap = chunk.chunkTileEntityMap;
         Map<ChunkPosition, TileEntity> tTileMap;
@@ -243,8 +253,8 @@ public class ScanMessageHandlerOnServer implements IMessageHandler<ScanRequestTo
                         int x = ((MultiTileEntityRock) tile).getX();
                         int y = ((MultiTileEntityRock) tile).getY();
                         int z = ((MultiTileEntityRock) tile).getZ();
-                        this.scannedOres.add(new OreData(x, y, z, matID));
-                        this.oresFound++;
+                        scannedOres.add(new OreData(x, y, z, matID));
+                        oresFound++;
                     }
                 });
             } catch (Exception e) {

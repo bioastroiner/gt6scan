@@ -1,7 +1,7 @@
 package bioast.mods.gt6scan.item;
 
 import bioast.mods.gt6scan.network.ScanMode;
-import bioast.mods.gt6scan.network.ScanRequestToServer;
+import bioast.mods.gt6scan.network.scanmessage.ScanRequest;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import gregapi.data.CS;
 import gregapi.data.LH.Chat;
@@ -29,7 +29,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
                         aItem.useEnergy(TD.Energy.EU, aStack, 1000 * CS.V[6], aPlayer, aPlayer.inventory, aWorld, (int) aPlayer.posX, (int) aPlayer.posY, (int) aPlayer.posZ, !UT.Entities.isCreative(aPlayer));
                 }
                 if (aWorld.isRemote) {
-                    ScanRequestToServer req = new ScanRequestToServer(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
+                    ScanRequest req = new ScanRequest(mode, (int) aPlayer.posX, (int) aPlayer.posZ);
                     CommonProxy.simpleNetworkWrapper.sendToServer(req);
                 }
             }

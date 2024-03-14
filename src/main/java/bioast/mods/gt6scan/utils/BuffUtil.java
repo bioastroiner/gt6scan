@@ -1,5 +1,6 @@
-package bioast.mods.gt6scan.network;
+package bioast.mods.gt6scan.utils;
 
+import bioast.mods.gt6scan.network.OreData;
 import io.netty.buffer.ByteBuf;
 
 public class BuffUtil {
