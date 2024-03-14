@@ -1,6 +1,7 @@
 package bioast.mods.gt6scan.item;
 
 import bioast.mods.gt6scan.ScannerMod;
+import gregapi.data.CS;
 import gregapi.data.TD;
 import gregapi.item.multiitem.MultiItemRandom;
 import gregapi.item.multiitem.energy.EnergyStat;
@@ -15,8 +16,13 @@ public class ScannerMultiTool extends MultiItemRandom {
 
     @Override
     public void addItems() {
-        addItem(1,"Advanced Scanner (LuV)","Scan For Ores, Fluids and Rocks",new ScannerBehavior(),
-                EnergyStat.makeTool(TD.Energy.EU, V[6] * 8000, V[6], 64, ST.make(this, 1, 1)));
+        for (int i = 2; i < 6; i++) {
+            addItem(i,
+                String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
+                "Scan For Ores, Fluids and Rocks",
+                new ScannerBehavior(),
+                EnergyStat.makeTool(TD.Energy.EU, V[i] * 8000, V[i], 1, ST.make(this, 1, i)));
+        }
     }
 }
 

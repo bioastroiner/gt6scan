@@ -43,12 +43,12 @@ import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
 
 @SideOnly(Side.CLIENT)
 public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, IGuiHolder {
-    int chunkSize = 9;
+    int chunkSize;
     int x_origin;
     int z_origin;
     ScanMode mode = ScanMode.LARGE;
-    /* CLIENT ONLY*/ int[][] blockColorStorage = new int[16 * chunkSize][16 * chunkSize]; // store color
-    /* CLIENT ONLY*/ short[][] blockMatStorage = new short[16 * chunkSize][16 * chunkSize]; // like blocks but stores materialID
+    int[][] blockColorStorage;// store color
+    short[][] blockMatStorage; // like blocks but stores materialID
     Map<Short, Integer> sortedOres = new HashMap<>();
     List<OreData> scannedOres = new ArrayList<>();
 
@@ -61,6 +61,9 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
         scannedOres = message.scannedOres;
         x_origin = message.x;
         z_origin = message.z;
+        chunkSize = message.chunkSize;
+        blockColorStorage = new int[16 * chunkSize][16 * chunkSize];
+        blockMatStorage = new short[16 * chunkSize][16 * chunkSize];
         mode = ScanMode.values()[message.mode];
         refresh();
         GuiInfo.builder()
@@ -72,10 +75,6 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
     }
 
     private void refresh() {
-        //ScannerMod.debug.info(x_origin);
-        //ScannerMod.debug.info(z_origin);
-
-        /* CLIENT CODE */
         blockMatStorage = new short[chunkSize * 16][chunkSize * 16];
         //blockColorStorage = new int[chunkSize * 16][chunkSize * 16];
         int borderColor = col(MT.Gray);

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+for file in ./*
+do
+    if [ -f "$file" ]; then
+        if [[ "${file##*.}" == "png" ]]; then
+            mkdir "${file%.*}"
+            for i in {1..8}; do
+                cp "$file" "${file%.*}/$i.png"
+                echo "copied ${file%.*}/$i.png" 
+            done
+        fi
+    fi
+done

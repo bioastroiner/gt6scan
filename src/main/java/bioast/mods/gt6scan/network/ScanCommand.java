@@ -54,10 +54,11 @@ public class ScanCommand extends CommandBase {
                 }
             }
             if (size > 9) {
-                sender.addChatMessage(new ChatComponentText("Size Capped to 9, from %d".formatted(size)));
+                sender.addChatMessage(new ChatComponentText(String.format("Size Capped to 9, from %d", size)));
                 size = 9;
             }
-            sender.addChatMessage(new ChatComponentText("Beginning Scanning Mode:%s, at X:%d Z:%d with size:{%d}".formatted(
+            sender.addChatMessage(new ChatComponentText(String.format(
+                "Beginning Scanning Mode:%s, at X:%d Z:%d with size:{%d}",
                 mode,
                 x,
                 z,

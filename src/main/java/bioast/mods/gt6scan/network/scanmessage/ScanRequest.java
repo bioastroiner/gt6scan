@@ -38,5 +38,6 @@ public class ScanRequest implements IMessage {
         buf.writeInt(mode);
         buf.writeInt(x);
         buf.writeInt(z);
+        buf.writeInt(chunkSize);
     }
 }

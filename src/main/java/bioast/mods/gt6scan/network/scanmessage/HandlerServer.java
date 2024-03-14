@@ -33,7 +33,6 @@ import static bioast.mods.gt6scan.utils.HLPs.prefixBlock;
 
 public class HandlerServer implements IMessageHandler<ScanRequest, ScanResponse> {
     //Map<Short, Integer> sortedOres = new HashMap<>();
-    final int chunkSize = 9;
     List<OreData> scannedOres = new ArrayList<>();
     int oresFound = 0;
     int x_origin;
@@ -49,12 +48,13 @@ public class HandlerServer implements IMessageHandler<ScanRequest, ScanResponse>
         processMessage(ScanMode.values()[message.mode],
             ctx.getServerHandler().playerEntity.getEntityWorld(),
             message.x,
-            message.z);
+            message.z,
+            message.chunkSize);
 
-        return new ScanResponse(scannedOres, x_origin, z_origin, message.mode);
+        return new ScanResponse(scannedOres, x_origin, z_origin, message.mode, message.chunkSize);
     }
 
-    private void processMessage(ScanMode mode, World aWorld, int xo, int zo) {
+    private void processMessage(ScanMode mode, World aWorld, int xo, int zo, int chunkSize) {
         scannedOres.clear();
         oresFound = 0;
         Chunk[][] chunks = getChunksAroundLoc(aWorld, xo, zo, chunkSize);

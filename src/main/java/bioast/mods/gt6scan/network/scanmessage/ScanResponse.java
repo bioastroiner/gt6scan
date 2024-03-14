@@ -11,12 +11,14 @@ import java.util.List;
 public class ScanResponse implements IMessage {
     List<OreData> scannedOres;
     int x, z, mode;
+    int chunkSize;
 
-    public ScanResponse(List<OreData> scannedOres, int x, int z, int mode) {
+    public ScanResponse(List<OreData> scannedOres, int x, int z, int mode, int chunkSize) {
         this.scannedOres = scannedOres;
         this.x = x;
         this.z = z;
         this.mode = mode;
+        this.chunkSize = chunkSize;
     }
 
     public ScanResponse() {
@@ -28,6 +30,7 @@ public class ScanResponse implements IMessage {
         scannedOres = new ArrayList<>();
         x = buf.readInt();
         z = buf.readInt();
+        chunkSize = buf.readInt();
         int size = buf.readInt();
         mode = buf.readInt();
         for (int i = 0; i < size; i++) {
@@ -39,6 +42,7 @@ public class ScanResponse implements IMessage {
     public void toBytes(ByteBuf buf) {
         buf.writeInt(x);
         buf.writeInt(z);
+        buf.writeInt(chunkSize);
         buf.writeInt(scannedOres.size());
         buf.writeInt(mode);
         for (OreData ore : scannedOres) {
