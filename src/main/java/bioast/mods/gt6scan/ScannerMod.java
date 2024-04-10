@@ -65,6 +65,7 @@ public class ScannerMod extends Abstract_Mod {
 		tool.storage_multiplier = config.get("core",
 				"storage_multiplier (this gets multiplied by the voltage of each tier)",
 				8000);
+		tool.no_power = config.get("core", "make tools not require energy anymore", false);
 	}
 
 	@Override

@@ -15,6 +15,7 @@ import static gregapi.data.TD.Energy.EU;
 public class ScannerMultiTool extends MultiItemRandom {
 	public String mainConsumptionEnergyType = "EU";
 	public int storage_multiplier = 8000;
+	public boolean no_power = false;
 
 	public ScannerMultiTool() {
 		super(ScannerMod.MODID, "scannertool");
@@ -28,11 +29,19 @@ public class ScannerMultiTool extends MultiItemRandom {
 					false,
 					false);
 			if (energy == null) energy = EU;
-			addItem(i,
-					String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
-					"Scan For Ores, Fluids and Rocks",
-					new ScannerBehavior(),
-					EnergyStat.makeTool(energy, V[i] * storage_multiplier, V[i], 1, ST.make(this, 1, i)));
+			if (no_power) {
+				addItem(i,
+						String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
+						"Scan For Ores, Fluids and Rocks",
+						new ScannerBehavior()
+				);
+			} else {
+				addItem(i,
+						String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
+						"Scan For Ores, Fluids and Rocks",
+						new ScannerBehavior(),
+						EnergyStat.makeTool(energy, V[i] * storage_multiplier, V[i], 1, ST.make(this, 1, i)));
+			}
 		}
 	}
 }
