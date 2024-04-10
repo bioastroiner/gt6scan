@@ -42,87 +42,87 @@ import static com.cleanroommc.modularui.drawable.BufferBuilder.bufferbuilder;
 
 @SideOnly(Side.CLIENT)
 public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, IGuiHolder {
-    int chunkSize;
-    int x_origin;
-    int z_origin;
-    ScanMode mode = ScanMode.LARGE;
-    int[][] blockColorStorage;// store color
-    short[][] blockMatStorage; // like blocks but stores materialID
-    Map<Short, Integer> sortedOres = new HashMap<>();
-    List<OreData> scannedOres = new ArrayList<>();
+	int chunkSize;
+	int x_origin;
+	int z_origin;
+	ScanMode mode = ScanMode.LARGE;
+	int[][] blockColorStorage;// store color
+	short[][] blockMatStorage; // like blocks but stores materialID
+	Map<Short, Integer> sortedOres = new HashMap<>();
+	List<OreData> scannedOres = new ArrayList<>();
 
-    @Override
-    public IMessage onMessage(ScanResponse message, MessageContext ctx) {
-        if (ctx.side != Side.CLIENT) return null;
+	@Override
+	public IMessage onMessage(ScanResponse message, MessageContext ctx) {
+		if (ctx.side != Side.CLIENT) return null;
 
-        Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = Minecraft.getMinecraft();
 
-        scannedOres = message.scannedOres;
-        x_origin = message.x;
-        z_origin = message.z;
-        chunkSize = message.chunkSize;
-        blockColorStorage = new int[16 * chunkSize][16 * chunkSize];
-        blockMatStorage = new short[16 * chunkSize][16 * chunkSize];
-        mode = ScanMode.values()[message.mode];
-        refresh();
-        GuiInfo.builder()
-            .clientGui(this::createScreen)
-            .commonGui((creationContext, syncManager) -> buildUI(creationContext, syncManager, true))
-            .build()
-            .open(minecraft.thePlayer);
-        return null;
-    }
+		scannedOres = message.scannedOres;
+		x_origin = message.x;
+		z_origin = message.z;
+		chunkSize = message.chunkSize;
+		blockColorStorage = new int[16 * chunkSize][16 * chunkSize];
+		blockMatStorage = new short[16 * chunkSize][16 * chunkSize];
+		mode = ScanMode.values()[message.mode];
+		refresh();
+		GuiInfo.builder()
+				.clientGui(this::createScreen)
+				.commonGui((creationContext, syncManager) -> buildUI(creationContext, syncManager, true))
+				.build()
+				.open(minecraft.thePlayer);
+		return null;
+	}
 
-    private void refresh() {
-        blockMatStorage = new short[chunkSize * 16][chunkSize * 16];
-        //blockColorStorage = new int[chunkSize * 16][chunkSize * 16];
-        int borderColor = col(MT.Gray);
-        int backgroundColor = col(MT.White);
-        int oreColor = 0;
-        sortedOres.clear();
-        for (int chunkGridX = 0; chunkGridX < chunkSize; chunkGridX++) {
-            for (int chunkGridZ = 0; chunkGridZ < chunkSize; chunkGridZ++) {
-                for (int z = 0; z < 16; z++) {
-                    for (int x = 0; x < 16; x++) {
-                        int blockGridX, blockGridZ;
-                        boolean isOre = false;
-                        blockGridX = x + chunkGridX * 16;
-                        blockGridZ = z + chunkGridZ * 16;
-                        int blockWorldX = x_origin + blockGridX;
-                        int blockWorldZ = z_origin + blockGridZ;
-                        int lastY = 0;
-                        try {
-                            if (scannedOres != null && !scannedOres.isEmpty()) for (OreData data : scannedOres) {
-                                if (data.x == blockWorldX && data.z == blockWorldZ) {
-                                    if (lastY <= data.y) {
-                                        oreColor = col(OreDictMaterial.MATERIAL_ARRAY[data.matID]);
-                                        lastY = data.y;
-                                    }
-                                    if (sortedOres.containsKey(data.matID)) {
-                                        int lastCount = sortedOres.get(data.matID);
-                                        sortedOres.put(data.matID, lastCount + 1);
-                                    } else sortedOres.put(data.matID, 1);
-                                    blockMatStorage[blockGridX][blockGridZ] = data.matID;
-                                    isOre = true;
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+	private void refresh() {
+		blockMatStorage = new short[chunkSize * 16][chunkSize * 16];
+		//blockColorStorage = new int[chunkSize * 16][chunkSize * 16];
+		int borderColor = col(MT.Gray);
+		int backgroundColor = col(MT.White);
+		int oreColor = 0;
+		sortedOres.clear();
+		for (int chunkGridX = 0; chunkGridX < chunkSize; chunkGridX++) {
+			for (int chunkGridZ = 0; chunkGridZ < chunkSize; chunkGridZ++) {
+				for (int z = 0; z < 16; z++) {
+					for (int x = 0; x < 16; x++) {
+						int blockGridX, blockGridZ;
+						boolean isOre = false;
+						blockGridX = x + chunkGridX * 16;
+						blockGridZ = z + chunkGridZ * 16;
+						int blockWorldX = x_origin + blockGridX;
+						int blockWorldZ = z_origin + blockGridZ;
+						int lastY = 0;
+						try {
+							if (scannedOres != null && !scannedOres.isEmpty()) for (OreData data : scannedOres) {
+								if (data.x == blockWorldX && data.z == blockWorldZ) {
+									if (lastY <= data.y) {
+										oreColor = col(OreDictMaterial.MATERIAL_ARRAY[data.matID]);
+										lastY = data.y;
+									}
+									if (sortedOres.containsKey(data.matID)) {
+										int lastCount = sortedOres.get(data.matID);
+										sortedOres.put(data.matID, lastCount + 1);
+									} else sortedOres.put(data.matID, 1);
+									blockMatStorage[blockGridX][blockGridZ] = data.matID;
+									isOre = true;
+								}
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 
-                        blockColorStorage[blockGridX][blockGridZ] = backgroundColor;
-                        if (isOre) {
-                            blockColorStorage[blockGridX][blockGridZ] = oreColor;
-                        }
-                        if (x == 15 || z == 15 || x == 0 || z == 0) // We Skip 16th block to draw Borders
-                            blockColorStorage[blockGridX][blockGridZ] = borderColor;
-                        if (chunkGridZ == (chunkSize - 1) / 2 && chunkGridX == (chunkSize - 1) / 2 && x == 7 && z == 7)
-                            blockColorStorage[blockGridX][blockGridZ] = col(MT.Red);
-                    }
-                }
-            }
-        }
-    }
+						blockColorStorage[blockGridX][blockGridZ] = backgroundColor;
+						if (isOre) {
+							blockColorStorage[blockGridX][blockGridZ] = oreColor;
+						}
+						if (x == 15 || z == 15 || x == 0 || z == 0) // We Skip 16th block to draw Borders
+							blockColorStorage[blockGridX][blockGridZ] = borderColor;
+						if (chunkGridZ == (chunkSize - 1) / 2 && chunkGridX == (chunkSize - 1) / 2 && x == 7 && z == 7)
+							blockColorStorage[blockGridX][blockGridZ] = col(MT.Red);
+					}
+				}
+			}
+		}
+	}
 
     @Override
     public ModularScreen createScreen(GuiCreationContext guiContext, ModularPanel mainPanel) {

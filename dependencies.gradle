@@ -34,8 +34,12 @@
  * For more details, see https://docs.gradle.org/8.0.1/userguide/java_library_plugin.html#sec:java_library_configurations_graph
  */
 dependencies {
-    compileOnly "appeng:appliedenergistics2:rv3-beta-6:dev"
-    api("com.github.GTNewHorizons:ModularUI2:2.0.8-1.7.10:dev")
-    api "com.gregoriust.gregtech:gregtech_1.7.10:6.16.02:dev"
+    compileOnly 'appeng:appliedenergistics2:rv3-beta-6:dev'
+    api 'com.github.GTNewHorizons:ModularUI2:2.0.8-1.7.10:dev'
+    api 'com.gregoriust.gregtech:gregtech_1.7.10:6.16.02:dev'
     api 'com.github.GTNewHorizons:CodeChickenCore:1.1.11:dev'
+    api 'curse.maven:journeymap-32274:4500659'
+//    compileOnly(deobfCurse('xaeros-minimap-263420:4905582'))
+//    compileOnly(deobfCurse('xaeros-world-map-317780:4905612'))
+//    compileOnly(deobf('https://media.forgecdn.net/files/2462/146/mod_voxelMap_1.7.0b_for_1.7.10.litemod', 'mod_voxelMap_1.7.0b_for_1.7.10.jar'))
 }
