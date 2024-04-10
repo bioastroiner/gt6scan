@@ -21,7 +21,6 @@ import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import gregapi.data.CS;
 import gregapi.data.MT;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.util.UT;
@@ -188,7 +187,7 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
             int color = UT.Code.getRGBaInt((mat.fRGBaSolid));
             if (mat == MT.MethaneIce) {
                 color = UT.Code.getRGBaInt(MT.Milk.fRGBaSolid);
-                name = CS.BlocksGT.GasNatural.getLocalizedName();
+                name = "Natural Gas";
             }
             IWidget nameWidget = new TextWidget(IKey.str(name + ": " + amount)).color(color).shadow(true);
             listWidget.row(itemWidget, nameWidget).nextRow();
