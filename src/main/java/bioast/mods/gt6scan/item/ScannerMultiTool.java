@@ -29,18 +29,19 @@ public class ScannerMultiTool extends MultiItemRandom {
 					false,
 					false);
 			if (energy == null) energy = EU;
+			addItem(i,
+					String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
+					"Scan For Ores, Fluids and Rocks (when in Gui you can click on any tile and bookmark it)",
+					new ScannerBehavior()
+			);
 			if (no_power) {
-				addItem(i,
-						String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
-						"Scan For Ores, Fluids and Rocks",
-						new ScannerBehavior()
-				);
 			} else {
-				addItem(i,
-						String.format("%s Scanner (%s)", CS.VOLTAGE_NAMES[i], CS.VN[i]),
-						"Scan For Ores, Fluids and Rocks",
-						new ScannerBehavior(),
-						EnergyStat.makeTool(energy, V[i] * storage_multiplier, V[i], 1, ST.make(this, 1, i)));
+				setElectricStats(i,
+						EnergyStat.makeTool(energy,
+								V[i] * storage_multiplier,
+								V[i],
+								1,
+								ST.make(this, 1, i)));
 			}
 		}
 	}
