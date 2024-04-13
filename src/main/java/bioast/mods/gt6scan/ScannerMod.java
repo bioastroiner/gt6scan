@@ -1,6 +1,5 @@
 package bioast.mods.gt6scan;
 
-import bioast.mods.gt6scan.item.ScannerBehavior;
 import bioast.mods.gt6scan.item.ScannerMultiTool;
 import bioast.mods.gt6scan.network.ScanCommand;
 import bioast.mods.gt6scan.proxy.CommonProxy;
@@ -74,10 +73,6 @@ public class ScannerMod extends Abstract_Mod {
     public void onModInit2(FMLInitializationEvent aEvent) {
         MinecraftForge.EVENT_BUS.register(this);
         proxy.init(aEvent);
-
-        if (config.get("core", "makeDebugToolAnScanner", true)) {
-            CS.ItemsGT.TOOLS.addItemBehavior(9001, new ScannerBehavior());
-        }
     }
 
     @Override

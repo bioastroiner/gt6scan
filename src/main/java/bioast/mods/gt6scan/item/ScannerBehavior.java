@@ -42,7 +42,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
                 }
             }
         } else {
-            return changeMode(aPlayer, aStack, mode);
+            return nextMode(aPlayer, aStack, mode);
         }
         return super.onItemRightClick(aItem, aStack, aWorld, aPlayer);
     }
@@ -62,7 +62,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
         if (!tag.hasKey("mode")) {
             UT.NBT.makeInt(tag, 0);
             UT.NBT.set(aStack, tag);
-            return ScanMode.NONE;
+            return ScanMode.LARGE; // default to large
         } else {
             return ScanMode.values()[tag.getInteger("mode")];
         }
@@ -107,7 +107,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
         }
     }
 
-    private ItemStack changeMode(EntityPlayer aPlayer, ItemStack aStack, ScanMode currentMode) {
+    private ItemStack nextMode(EntityPlayer aPlayer, ItemStack aStack, ScanMode currentMode) {
         //Switch mode
         int nextMode = currentMode.ordinal() + 1;
         if (nextMode >= ScanMode.values().length) nextMode = 0;
