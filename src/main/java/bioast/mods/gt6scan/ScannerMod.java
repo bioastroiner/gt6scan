@@ -9,6 +9,11 @@ import gregapi.api.Abstract_Mod;
 import gregapi.api.Abstract_Proxy;
 import gregapi.config.Config;
 import gregapi.data.CS;
+import gregapi.data.IL;
+import gregapi.data.MT;
+import gregapi.data.OP;
+import gregapi.oredict.OreDictMaterial;
+import gregapi.util.CR;
 import net.minecraftforge.common.MinecraftForge;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +34,7 @@ public class ScannerMod extends Abstract_Mod {
     public static Config config;
     @SidedProxy(clientSide = "bioast.mods.gt6scan.proxy.ClientProxy", serverSide = "bioast.mods.gt6scan.proxy.CommonProxy")
     public static CommonProxy proxy;
+    public static ScannerMultiTool tool;
 
     @Override
     public String getModID() {
@@ -58,7 +64,7 @@ public class ScannerMod extends Abstract_Mod {
         String eu = config.get("core",
             "ToolConsumptionEnergy Def:EU, Poss: STEAM, MJ, RF, AU, QU, MU, LU, HU, CU, KU, RU, EU, NU, TU, (put any invalid item to make it consume no energy)",
             "EU");
-        ScannerMultiTool tool = new ScannerMultiTool();
+        tool = new ScannerMultiTool();
         tool.mainConsumptionEnergyType = eu;
         tool.storage_multiplier = config.get("core",
             "storage_multiplier (this gets multiplied by the voltage of each tier)",
@@ -77,6 +83,27 @@ public class ScannerMod extends Abstract_Mod {
     @Override
     public void onModPostInit2(FMLPostInitializationEvent aEvent) {
         proxy.postInit(aEvent);
+        OreDictMaterial[] Metals = {
+            null,
+            null,
+            MT.SteelGalvanized,
+            MT.Aluminium,
+            MT.Titanium,
+            MT.TungstenSteel
+        };
+        for (int i = 2; i < 6; i++) {
+            CR.shaped(tool.make(i), new Object[]{
+                "FCs",
+                "MPM",
+                "MDM",
+                'M', OP.plate.mat(Metals[i], 1),
+                'C', CS.OD_CIRCUITS[i],
+                'P', OP.foil.mat(MT.Plastic, 1),
+                'D', CS.OD_USB_STICKS[i],
+                'F', IL.SENSORS[i].get(1),
+//                'B', IL.Batter // todo batteries
+            });
+        }
     }
 
     @Override
