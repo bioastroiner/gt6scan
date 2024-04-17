@@ -1,7 +1,6 @@
 package bioast.mods.gt6scan;
 
 import bioast.mods.gt6scan.item.ScannerMultiTool;
-import bioast.mods.gt6scan.network.ScanCommand;
 import bioast.mods.gt6scan.proxy.CommonProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
@@ -118,7 +117,6 @@ public class ScannerMod extends Abstract_Mod {
 
     @cpw.mods.fml.common.Mod.EventHandler
     public final void onServerStarting(cpw.mods.fml.common.event.FMLServerStartingEvent aEvent) {
-        aEvent.registerServerCommand(new ScanCommand());
         onModServerStarting(aEvent);
     }
 
