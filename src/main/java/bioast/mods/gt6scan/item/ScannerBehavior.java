@@ -82,7 +82,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
         if (!UT.Entities.isCreative(aPlayer)) {
             if (getEnergy(aItem, aStack) < CS.V[tier] && EnergyType != null) return true;
             else if (!aWorld.isRemote)
-                aItem.useEnergy(EnergyType,
+                return aItem.useEnergy(EnergyType,
                     aStack,
                     ScannerMultiTool.consumptionRate * CS.V[tier],
                     aPlayer,
@@ -93,7 +93,7 @@ public class ScannerBehavior extends IBehavior.AbstractBehaviorDefault {
                     (int) aPlayer.posZ,
                     !UT.Entities.isCreative(aPlayer));
         }
-        return false;
+        return true;
     }
 
     private int getSize(ItemStack aStack) {

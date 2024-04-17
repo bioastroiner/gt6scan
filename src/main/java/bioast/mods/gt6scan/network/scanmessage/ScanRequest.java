@@ -23,6 +23,7 @@ public class ScanRequest implements IMessage {
 
     public ScanRequest() {
         // invalid
+        throw new IllegalStateException("Invalid Packet Request");
     }
 
     @Override
