@@ -91,6 +91,7 @@ public class ScannerMod extends Abstract_Mod {
             MT.Titanium,
             MT.TungstenSteel
         };
+        String[] OD_USB_STICKS = {"gt:usbstick0", "gt:usbstick1", "gt:usbstick2", "gt:usbstick3", "gt:usbstick4", "gt:usbstick4"};
         for (int i = 2; i < 6; i++) {
             CR.shaped(tool.make(i), new Object[]{
                 "FCs",
@@ -99,7 +100,7 @@ public class ScannerMod extends Abstract_Mod {
                 'M', OP.plate.mat(Metals[i], 1),
                 'C', CS.OD_CIRCUITS[i],
                 'P', OP.foil.mat(MT.Plastic, 1),
-                'D', CS.OD_USB_STICKS[i],
+                'D', OD_USB_STICKS[i],
                 'F', IL.SENSORS[i].get(1),
 //                'B', IL.Batter // todo batteries
             });
