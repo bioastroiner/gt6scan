@@ -16,7 +16,6 @@ import com.cleanroommc.modularui.utils.Color;
 import com.cleanroommc.modularui.value.sync.GuiSyncManager;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Grid;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -25,7 +24,6 @@ import cpw.mods.fml.relauncher.SideOnly;
 import gregapi.data.MT;
 import gregapi.oredict.OreDictMaterial;
 import gregapi.util.UT;
-import journeymap.client.model.Waypoint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
@@ -229,23 +227,23 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
     private boolean bookmark(int world_x, int world_z, int color) {
         // bookmark on a WayPoint manager
         //todo antique atlas
-        if (Loader.isModLoaded("journeymap")) {
-            // todo fix this
-            Waypoint waypoint = Waypoint.at(
-                world_x,
-                Minecraft.getMinecraft().thePlayer.serverPosY,
-                world_z,
-                Waypoint.Type.Normal,
-                Minecraft.getMinecraft().thePlayer.dimension);
-            if (color < 0) {
-                waypoint.setRandomColor();
-            } else {
-                waypoint.setColor(color);
-            }
-            return true;
-        } else if (Loader.isModLoaded("xaero")) {
-            //todo Xaer
-        }
+//        if (Loader.isModLoaded("journeymap")) {
+//            // todo fix this
+//            Waypoint waypoint = Waypoint.at(
+//                world_x,
+//                Minecraft.getMinecraft().thePlayer.serverPosY,
+//                world_z,
+//                Waypoint.Type.Normal,
+//                Minecraft.getMinecraft().thePlayer.dimension);
+//            if (color < 0) {
+//                waypoint.setRandomColor();
+//            } else {
+//                waypoint.setColor(color);
+//            }
+//            return true;
+//        } else if (Loader.isModLoaded("xaero")) {
+//            //todo Xaer
+//        }
         return false;
     }
 
