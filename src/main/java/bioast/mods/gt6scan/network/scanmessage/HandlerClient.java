@@ -7,8 +7,8 @@ import com.cleanroommc.modularui.api.drawable.IDrawable;
 import com.cleanroommc.modularui.api.drawable.IKey;
 import com.cleanroommc.modularui.api.widget.IWidget;
 import com.cleanroommc.modularui.drawable.GuiDraw;
-import com.cleanroommc.modularui.manager.GuiCreationContext;
-import com.cleanroommc.modularui.manager.GuiInfo;
+import com.cleanroommc.modularui.factory.ClientGUI;
+import com.cleanroommc.modularui.factory.GuiData;
 import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.utils.Alignment;
@@ -68,11 +68,8 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
         blockMatStorage = new short[16 * chunkSize][16 * chunkSize];
         mode = ScanMode.values()[message.mode];
         refresh();
-        GuiInfo.builder()
-            .clientGui(this::createScreen)
-            .commonGui((creationContext, syncManager) -> buildUI(creationContext, syncManager, true))
-            .build()
-            .open(minecraft.thePlayer);
+        GuiData data = new GuiData(minecraft.thePlayer);
+        ClientGUI.open(createScreen(data, buildUI(data, new GuiSyncManager(data.getPlayer()))));
         return null;
     }
 
@@ -128,11 +125,11 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
     }
 
     @Override
-    public ModularScreen createScreen(GuiCreationContext guiContext, ModularPanel mainPanel) {
-        ItemStack itemStack = guiContext.getMainHandItem();
-        EntityPlayer player = guiContext.getPlayer();
+    public ModularScreen createScreen(GuiData data, ModularPanel mainPanel) {
+        ItemStack itemStack = data.getMainHandItem();
+        EntityPlayer player = data.getPlayer();
         mainPanel.flex().align(Alignment.Center).size(300, 166);
-        IWidget mapWidget = ((IDrawable) (context, x, y, width, height) -> {
+        IWidget mapWidget = ((IDrawable) (context, x, y, width, height, widgetTheme) -> {
             GL11.glDisable(GL11.GL_TEXTURE_2D);
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -175,8 +172,8 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glEnable(GL11.GL_TEXTURE_2D);
             // convert gui coordinates to world coordinates
-            int mouse_x = mainPanel.getScreen().context.getAbsMouseX();
-            int mouse_y = mainPanel.getScreen().context.getAbsMouseY();
+            int mouse_x = mainPanel.getScreen().getContext().getAbsMouseX();
+            int mouse_y = mainPanel.getScreen().getContext().getAbsMouseY();
             int world_x = (mouse_x - mainPanel.getArea().x - x + x_origin - 9);
             int world_z = (mouse_y - mainPanel.getArea().y - y + z_origin - 9);
             String corX = "X -> " + world_x;
@@ -221,7 +218,12 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
         });
         mainPanel.child(mapWidget);
         mainPanel.child(listWidget);
-        return IGuiHolder.super.createScreen(guiContext, mainPanel);
+        return IGuiHolder.super.createScreen(data, mainPanel);
+    }
+
+    @Override
+    public ModularPanel buildUI(GuiData guiData, GuiSyncManager guiSyncManager) {
+        return ModularPanel.defaultPanel("Scanner");
     }
 
     private boolean bookmark(int world_x, int world_z, int color) {
@@ -244,11 +246,6 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
             //todo Xaer
         }
         return false;
-    }
-
-    @Override
-    public ModularPanel buildUI(GuiCreationContext creationContext, GuiSyncManager syncManager, boolean isClient) {
-        return ModularPanel.defaultPanel("Scanner");
     }
 
     private boolean bookmark(int world_x, int world_z) {return bookmark(world_x, world_z, -1);}
