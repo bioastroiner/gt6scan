@@ -230,6 +230,7 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
         // bookmark on a WayPoint manager
         //todo antique atlas
         if (Loader.isModLoaded("journeymap")) {
+            // todo fix this
             Waypoint waypoint = Waypoint.at(
                 world_x,
                 Minecraft.getMinecraft().thePlayer.serverPosY,
