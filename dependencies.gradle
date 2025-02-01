@@ -36,7 +36,7 @@
 dependencies {
     compileOnly 'appeng:appliedenergistics2:rv3-beta-6:dev'
 //    api 'com.github.GTNewHorizons:ModularUI2:2.0.9-1.7.10:dev'
-    api fileTree('libs/modularui-2.0.9-1.7.10-dev.jar')
+    api fileTree('libs/modularui2-2.2.2-1.7.10-dev.jar')
     api 'com.github.GTNewHorizons:GTNHLib:0.2.4:dev'
     api 'com.gregoriust.gregtech:gregtech_1.7.10:6.16.02:dev'
     api("com.github.GTNewHorizons:NotEnoughItems:2.5.4-GTNH:dev")

@@ -13,7 +13,7 @@ import com.cleanroommc.modularui.screen.ModularPanel;
 import com.cleanroommc.modularui.screen.ModularScreen;
 import com.cleanroommc.modularui.utils.Alignment;
 import com.cleanroommc.modularui.utils.Color;
-import com.cleanroommc.modularui.value.sync.GuiSyncManager;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
 import com.cleanroommc.modularui.widgets.TextWidget;
 import com.cleanroommc.modularui.widgets.layout.Grid;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
@@ -67,7 +67,7 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
         mode = ScanMode.values()[message.mode];
         refresh();
         GuiData data = new GuiData(minecraft.thePlayer);
-        ClientGUI.open(createScreen(data, buildUI(data, new GuiSyncManager(data.getPlayer()))));
+        ClientGUI.open(createScreen(data, buildUI(data, new PanelSyncManager())));
         return null;
     }
 
@@ -220,7 +220,7 @@ public class HandlerClient implements IMessageHandler<ScanResponse, IMessage>, I
     }
 
     @Override
-    public ModularPanel buildUI(GuiData guiData, GuiSyncManager guiSyncManager) {
+    public ModularPanel buildUI(GuiData guiData, PanelSyncManager panelSyncManager) {
         return ModularPanel.defaultPanel("Scanner");
     }
 
